@@ -68,25 +68,25 @@
 			<!--sys begin -->
 			<view class="comm-list menu card-project shadow-project">
 
-				<view class="item arrow" bindtap="url" data-url="../../about/index/about_index">
+				<!-- <view class="item arrow" bindtap="url" data-url="../../about/index/about_index">
 					<view class="content">
 						<text class="icon-friend my-icon-project text-purple"></text>
 						<text class="text-black">关于我们</text>
 					</view>
-				</view> 
+				</view>  -->
 				
-				<view wx:if="{{!skin.IS_SUB}}" class="item arrow" bindtap="url" data-url="../../about/contact/about_contact">
+				<!-- <view wx:if="{{!skin.IS_SUB}}" class="item arrow" bindtap="url" data-url="../../about/contact/about_contact">
 					<view class="content">
 						<text class="icon-phone my-icon-project  text-cyan"></text>
 						<text class="text-black">联系我们</text>
 					</view>
-				</view>
-				<view wx:else class="item arrow" bindtap="url" data-type="relaunch" data-url="../../../../pages/home/service/home_service">
+				</view> -->
+				<!-- <view wx:else class="item arrow" bindtap="url" data-type="relaunch" data-url="../../../../pages/home/service/home_service">
 					<view class="content">
 						<text class="icon-phone my-icon-project text-cyan"></text>
 						<text class="text-black">联系作者了解更多详情</text>
 					</view>
-				</view>
+				</view> -->
 
 
 				<view class="item arrow" bindtap="bindSetTap">

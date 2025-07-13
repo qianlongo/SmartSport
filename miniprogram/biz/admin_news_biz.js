@@ -159,7 +159,8 @@ AdminNewsBiz.CHECK_FORM = {
 	cateId: 'formCateId|must|id|name=分类',
 	order: 'formOrder|must|int|min:1|max:9999|name=排序号',
 	desc: 'formDesc|string|min:10|max:200|name=简介',
-	type: 'formType|must|int|in:0,1|name=是否外部文章'
+	type: 'formType|must|int|in:0,1|name=是否外部文章',
+	content: 'formContent|array|name=详细内容'
 };
 
 /** 表单校验  外部 */

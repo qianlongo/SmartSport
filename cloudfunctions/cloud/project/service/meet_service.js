@@ -78,6 +78,7 @@ class MeetService extends BaseService {
 
 	// 按时段统计某时段报名情况
 	async statJoinCnt(meetId, timeMark) {
+		console.log('statJoinCnt', { meetId, timeMark });
 		let whereJoin = {
 			JOIN_MEET_TIME_MARK: timeMark,
 			JOIN_MEET_ID: meetId
@@ -95,6 +96,7 @@ class MeetService extends BaseService {
 			day: this.getDayByTimeMark(timeMark)
 		};
 		let day = await DayModel.getOne(whereDay, 'times');
+		console.log('day', { day, whereDay, stat, ret });
 		if (!day) return;
 
 		let times = day.times;

@@ -17,7 +17,8 @@ class NewsService extends BaseService {
 
 		let where = {
 			_id: id,
-			NEWS_STATUS: 1
+			// 不用限制吧，否则停用的不能看详情？
+			// NEWS_STATUS: 1
 		}
 		let news = await NewsModel.getOne(where, fields);
 		if (!news) return null;

@@ -49,7 +49,7 @@
 					</view>
 
 					<view class="oprt">
-						<view bindtap="url" data-url="../edit/admin_meet_edit?id={{item._id}}" class="btn margin-right-s"><text class="icon-settings margin-right-xxs text-blue"></text>设置</view>
+						<view bindtap="url" data-url="../edit/admin_meet_edit?id={{item._id}}" class="btn margin-right-s"><text class="icon-settings margin-right-xxs text-blue"></text>编辑</view>
 
 						<view bindtap="bindRecordSelectTap" data-id="{{item._id}}" data-title="{{item.MEET_TITLE}}" class="btn margin-right-s">名单与核销</view>
 

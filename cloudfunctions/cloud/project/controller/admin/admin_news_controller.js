@@ -119,7 +119,8 @@ class AdminNewsController extends BaseAdminController {
 				cateName: 'must|string|name=分类',
 				order: 'must|int|min:1|max:9999|name=排序号',
 				desc: 'must|string|min:10|max:200|name=简介',
-				type: 'must|int|in:0,1|name=是否外部文章'
+				type: 'must|int|in:0,1|name=是否外部文章',
+				content: 'formContent|array|name=详细内容'
 			};
 		else
 			rules = {

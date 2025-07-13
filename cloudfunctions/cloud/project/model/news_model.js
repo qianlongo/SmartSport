@@ -23,7 +23,7 @@ NewsModel.DB_STRUCTURE = {
 	NEWS_TITLE: 'string|false|comment=标题',
 	NEWS_DESC: 'string|false|comment=描述',
 	NEWS_URL: 'string|false|comment=外部链接URL',
-	NEWS_STATUS: 'int|true|default=1|comment=状态 0/1',
+	NEWS_STATUS: 'int|true|default=0|comment=状态 0/1',
 
 	NEWS_CATE_ID: 'string|true|comment=分类编号',
 	NEWS_CATE_NAME: 'string|true|comment=分类冗余',
@@ -32,7 +32,7 @@ NewsModel.DB_STRUCTURE = {
 
 	NEWS_HOME: 'int|true|default=9999|comment=推荐到首页',
 
-	NEWS_CONTENT: 'array|true|default=[]|comment=内容',
+	NEWS_CONTENT: 'array|true|comment=内容',
 
 	NEWS_VIEW_CNT: 'int|true|default=0|comment=访问次数',
 	NEWS_FAV_CNT: 'int|true|default=0|comment=收藏人数',

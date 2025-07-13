@@ -35,37 +35,37 @@ module.exports = {
 	//***########### ADMIN ################## */  
 	'admin/login': 'admin/admin_home_controller@adminLogin',
 	'admin/home': 'admin/admin_home_controller@adminHome',
-	'admin/clear_cache': 'admin/admin_home_controller@clearCache#noDemo',
+	'admin/clear_cache': 'admin/admin_home_controller@clearCache#noDemo', // 清除缓存|已支持
 
 	'admin/setup_about': 'admin/admin_setup_controller@setupAbout#noDemo',
 	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo', 
 	'admin/setup_qr': 'admin/admin_setup_controller@genMiniQr', 
 
-	'admin/news_list': 'admin/admin_news_controller@getNewsList',
-	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo',
+	'admin/news_list': 'admin/admin_news_controller@getNewsList', // 文章列表|已支持
+	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo', // 添加文章
 	'admin/news_detail': 'admin/admin_news_controller@getNewsDetail',
-	'admin/news_edit': 'admin/admin_news_controller@editNews#noDemo',
-	'admin/news_update_pic': 'admin/admin_news_controller@updateNewsPic#noDemo',
-	'admin/news_update_content': 'admin/admin_news_controller@updateNewsContent#noDemo',
-	'admin/news_del': 'admin/admin_news_controller@delNews#noDemo', 
-	'admin/news_sort': 'admin/admin_news_controller@sortNews#noDemo',
-	'admin/news_status': 'admin/admin_news_controller@statusNews#noDemo',
+	'admin/news_edit': 'admin/admin_news_controller@editNews#noDemo', // 修改文章|
+	'admin/news_update_pic': 'admin/admin_news_controller@updateNewsPic#noDemo', // 上传封面图
+	'admin/news_update_content': 'admin/admin_news_controller@updateNewsContent#noDemo', // 更新文章内容|已支持
+	'admin/news_del': 'admin/admin_news_controller@delNews#noDemo',  // 删除文章|已支持
+	'admin/news_sort': 'admin/admin_news_controller@sortNews#noDemo', // 上首页| 已支持
+	'admin/news_status': 'admin/admin_news_controller@statusNews#noDemo', // 修改文章状态| 启用/停用 已支持
 
 	'admin/meet_list': 'admin/admin_meet_controller@getMeetList',
-	'admin/meet_join_list': 'admin/admin_meet_controller@getJoinList',
+	'admin/meet_join_list': 'admin/admin_meet_controller@getJoinList', // 预约列表|
 	'admin/join_status': 'admin/admin_meet_controller@statusJoin#noDemo',
 	'admin/join_del': 'admin/admin_meet_controller@delJoin#noDemo',
-	'admin/meet_insert': 'admin/admin_meet_controller@insertMeet#noDemo',
+	'admin/meet_insert': 'admin/admin_meet_controller@insertMeet#noDemo', // 插入活动 |已支持
 	'admin/meet_detail': 'admin/admin_meet_controller@getMeetDetail',
-	'admin/meet_edit': 'admin/admin_meet_controller@editMeet#noDemo',
-	'admin/meet_del': 'admin/admin_meet_controller@delMeet#noDemo',
-	'admin/meet_update_content': 'admin/admin_meet_controller@updateMeetContent#noDemo',
-	'admin/meet_update_style': 'admin/admin_meet_controller@updateMeetStyleSet#noDemo',
-	'admin/meet_sort': 'admin/admin_meet_controller@sortMeet#noDemo',
-	'admin/meet_status': 'admin/admin_meet_controller@statusMeet#noDemo',
+	'admin/meet_edit': 'admin/admin_meet_controller@editMeet#noDemo', // 修改活动|已支持
+	'admin/meet_del': 'admin/admin_meet_controller@delMeet#noDemo', // 删除活动|已支持
+	'admin/meet_update_content': 'admin/admin_meet_controller@updateMeetContent#noDemo', // 更新活动内容|已支持
+	'admin/meet_update_style': 'admin/admin_meet_controller@updateMeetStyleSet#noDemo', // 更新活动封面图
+	'admin/meet_sort': 'admin/admin_meet_controller@sortMeet#noDemo', // 置顶排序设定 |已支持
+	'admin/meet_status': 'admin/admin_meet_controller@statusMeet#noDemo', // 修改活动状态| 启用/停用 已支持
 	'admin/meet_cancel_time_join': 'admin/admin_meet_controller@cancelJoinByTimeMark#noDemo',
-	'admin/join_scan': 'admin/admin_meet_controller@scanJoin#noDemo',
-	'admin/join_checkin': 'admin/admin_meet_controller@checkinJoin#noDemo',
+	'admin/join_scan': 'admin/admin_meet_controller@scanJoin#noDemo', // 扫码核销
+	'admin/join_checkin': 'admin/admin_meet_controller@checkinJoin#noDemo', // 签到核销 |已支持
 	'admin/self_checkin_qr': 'admin/admin_meet_controller@genSelfCheckinQr',
 	'admin/meet_day_list': 'admin/admin_meet_controller@getDayList',
 
@@ -73,10 +73,10 @@ module.exports = {
 	'admin/join_data_export': 'admin/admin_export_controller@joinDataExport',
 	'admin/join_data_del': 'admin/admin_export_controller@joinDataDel#noDemo',
 
-	'admin/temp_insert': 'admin/admin_meet_controller@insertTemp#noDemo',
+	'admin/temp_insert': 'admin/admin_meet_controller@insertTemp#noDemo', // 模板插入
 	'admin/temp_list': 'admin/admin_meet_controller@getTempList',
 	'admin/temp_del': 'admin/admin_meet_controller@delTemp#noDemo',
-	'admin/temp_edit': 'admin/admin_meet_controller@editTemp#noDemo', 
+	'admin/temp_edit': 'admin/admin_meet_controller@editTemp#noDemo',  // 模板编辑
 
 	'admin/log_list': 'admin/admin_mgr_controller@getLogList',
 

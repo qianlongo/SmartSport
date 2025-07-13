@@ -45,19 +45,19 @@
 	<!-- BOTTOM begin -->
 	<view class="comm-list menu  margin-top">
 	 
-		<view class="item arrow" bindtap="url" data-url='../../setup/about/admin_setup_about'>
+		<!-- <view class="item arrow" bindtap="url" data-url='../../setup/about/admin_setup_about'>
 			<view class="content">
 				<text class="icon-edit text-darkgreen"></text>
 				<text class="text-black">编辑 - 关于我们</text>
 			</view>
-		</view>
+		</view> -->
 
-		<view class="item arrow" bindtap="url" data-url='../../setup/contact/admin_setup_contact'>
+		<!-- <view class="item arrow" bindtap="url" data-url='../../setup/contact/admin_setup_contact'>
 			<view class="content">
 				<text class="icon-post text-pink"></text>
 				<text class="text-black">编辑 - 联系我们</text>
 			</view>
-		</view>
+		</view> -->
 	 
 		<view class="item arrow" bindtap="url" data-url='../../setup/qr/admin_setup_qr'>
 			<view class="content">

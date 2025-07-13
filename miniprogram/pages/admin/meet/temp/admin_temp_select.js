@@ -25,6 +25,10 @@ Page({
 	 * 生命周期函数--监听页面加载
 	 */
 	onLoad: async function (options) {
+		this.loadList()
+	},
+
+	loadList: async function () {
 		if (!AdminBiz.isAdmin(this)) return;
 
 		await this._loadList();
@@ -47,9 +51,16 @@ Page({
 				limit: this.data.curTimeLimit,
 				isLimit: this.data.curTimeIsLimit
 			}
-			await cloudHelper.callCloudSumbit('admin/temp_edit', params, opts).then(res => {
+			await cloudHelper.callCloudSumbit('admin/temp_edit', params, opts).then(async res => {
+				// this.setData({
+				// 	temps: res.data,
+				// 	curTimeModalShow: false,
+				// 	curTimeIsLimit: false,
+				// 	curTimeLimit: 50,
+				// });
+				// 重新拉取一下数据
+				await this.loadList();
 				this.setData({
-					temps: res.data,
 					curTimeModalShow: false,
 					curTimeIsLimit: false,
 					curTimeLimit: 50,

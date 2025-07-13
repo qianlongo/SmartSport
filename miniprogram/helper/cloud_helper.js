@@ -307,6 +307,7 @@
  				cloudPath: id ? dir + id + '/' + rd + ext : dir + rd + ext,
  				filePath: filePath, // 文件路径
  			}).then(res => {
+				console.log('res-transTempPics', res);
  				imgList[i] = res.fileID;
  			}).catch(error => {
  				// handle error TODO:剔除图片

@@ -14,7 +14,21 @@ class AdminTempService extends BaseAdminService {
 		name,
 		times,
 	}) {
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		try {
+			await TempModel.insert({
+				TEMP_NAME: name,
+				TEMP_TIMES: times,
+			});
+			return {
+				result: "ok",
+			}
+		} catch (error) {
+			this.AppError("插入模板失败：" + error.message);
+			return {
+				result: "error",
+				msg: error.message,
+			}
+		}
 	}
 
 	/**更新数据 */
@@ -23,7 +37,45 @@ class AdminTempService extends BaseAdminService {
 		limit,
 		isLimit
 	}) {
-		this.AppError('此功能暂不开放，如有需要请加作者微信：cclinux0730');
+		try {
+			// 先获取模板数据
+			let where = {
+				_id: id,
+			};
+			let temp = await TempModel.getOne(where, 'TEMP_TIMES');
+			if (!temp) {
+				this.AppError("模板不存在");
+				return {
+					result: "error",
+					msg: "模板不存在",
+				}
+			}
+
+			// 更新TEMP_TIMES数组中每个时间段的isLimit和limit
+			let times = temp.TEMP_TIMES;
+			if (Array.isArray(times)) {
+				for (let i = 0; i < times.length; i++) {
+					times[i].isLimit = isLimit;
+					times[i].limit = limit;
+				}
+			}
+
+			// 更新数据库
+			let data = {
+				TEMP_TIMES: times,
+			};
+			await TempModel.edit(where, data);
+
+			return {
+				result: "ok",
+			}
+		} catch (error) {
+			this.AppError("更新模板失败：" + error.message);
+			return {
+				result: "error",
+				msg: error.message,
+			}
+		}
 	}
 
 
