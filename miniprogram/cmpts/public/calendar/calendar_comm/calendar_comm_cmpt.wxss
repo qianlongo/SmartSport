@@ -190,6 +190,11 @@ page {
 	background-color: var(--calendarLightColor);
 }
 
+/* 超过限制天数的预约小圆点样式 */
+.data-has-disabled::before {
+	background-color: #ccc !important;
+}
+
 
 /* 选中某日 */
 .cube .data-checked {

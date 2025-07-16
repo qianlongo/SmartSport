@@ -237,6 +237,12 @@
 	margin: auto;
 }
 
+/* 超过7天限制的日期样式 */
+.vertical-nav.nav .item.over-limit {
+	color: #ccc !important;
+	opacity: 0.6;
+}
+
 .vertical-box {
 	display: flex;
 	width: 100%;

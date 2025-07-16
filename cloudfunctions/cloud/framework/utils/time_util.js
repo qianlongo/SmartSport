@@ -322,6 +322,18 @@ function getTimeLeft(datetimeTo, flag = 1) {
 
 }
 
+/**
+ * 获取指定天数后的日期
+ * @param {*} days 天数，正数为未来，负数为过去
+ * @param {*} format 返回格式，默认Y-M-D
+ * @returns 日期字符串
+ */
+function getDateAfterDays(days = 0, format = 'Y-M-D') {
+	let now = new Date();
+	now.setDate(now.getDate() + days);
+	return timestamp2Time(now.getTime(), format);
+}
+
 
 module.exports = {
 	fmtDateCHN,
@@ -346,5 +358,7 @@ module.exports = {
 	getFirstOfWeek,
 	getLastOfWeek,
 	getFirstOfMonth,
-	getLastOfMonth
+	getLastOfMonth,
+	
+	getDateAfterDays
 }

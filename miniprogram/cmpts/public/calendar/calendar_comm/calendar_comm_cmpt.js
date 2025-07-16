@@ -67,12 +67,17 @@ Component({
 		multiOnlyOne: { //多选模式>只能选一个
 			type: Boolean,
 			value: false
+		},
+		limitDays: { // 预约限制天数，0表示不限制
+			type: Number,
+			value: 0
 		}
 	},
 
 	data: {
 		weekNo: 0, // 正在操作的那天位于第几周 
 		fullToday: 0, //今天 
+		maxBookDay: '', // 最大可预约日期
 	},
 
 	lifetimes: {
@@ -85,6 +90,14 @@ Component({
 		_init: function () {
 			calendarLib.getNowTime(this);
 			calendarLib.createDay(this);
+			
+			// 设置最大可预约日期（包含今天，所以是limitDays-1天）
+			if (this.data.limitDays > 0) {
+				let maxBookDay = timeHelper.getDateAfterDays(this.data.limitDays - 1, 'Y-M-D');
+				this.setData({
+					maxBookDay
+				});
+			}
 		},
 
 
@@ -104,21 +117,36 @@ Component({
 		bindDayOneTap(e) { // 单个天点击
 			let day = e.currentTarget.dataset.fullday;
 			let now = timeHelper.time('Y-M-D');
+			
 			if (day < now)
 				return pageHelper.showNoneToast('已过期', 1000);
+			
+			// 只对有预约的日期进行7天限制检查
+			if (this.data.hasDays && this.data.hasDays.includes(day)) {
+				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
+					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期`, 1500);
+				}
+			}
 
 			calendarLib.bindDayOneTap(e, this);
 		},
 
 		bindDayMultiTap(e) { // 多选天点击
+			let day = e.currentTarget.dataset.fullday;
+			let now = timeHelper.time('Y-M-D');
+			
 			// 过期时间判断
 			if (!this.data.selectTimeout) {
-				let day = e.currentTarget.dataset.fullday;
-				let now = timeHelper.time('Y-M-D');
 				if (day < now)
 					return pageHelper.showNoneToast(this.data.selectTimeoutHint);
 			}
-
+			
+			// 只对有预约的日期进行7天限制检查
+			if (this.data.hasDays && this.data.hasDays.includes(day)) {
+				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
+					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期`, 1500);
+				}
+			}
 
 			calendarLib.bindDayMultiTap(e, this);
 		},

@@ -3,6 +3,7 @@ const pageHelper = require('../helper/page_helper.js');
 const AdminMeetBiz = require('../biz/admin_meet_biz.js');
 const MeetBiz = require('../biz/meet_biz.js');
 const setting = require('../setting/setting.js');
+const timeHelper = require('../helper/time_helper.js');
 
 module.exports = Behavior({
 
@@ -48,6 +49,18 @@ module.exports = Behavior({
 				return;
 			}
 
+			// 为超过7天的日期添加标记
+			if (meet.MEET_DAYS_SET && meet.MEET_DAYS_SET.length > 0) {
+				let now = timeHelper.time('Y-M-D');
+				let maxDay = timeHelper.getDateAfterDays(6, 'Y-M-D'); // 7天包含今天，所以是6天
+				
+				for (let i = 0; i < meet.MEET_DAYS_SET.length; i++) {
+					let daySet = meet.MEET_DAYS_SET[i];
+					if (daySet.day > maxDay) {
+						daySet.isOverLimit = true;
+					}
+				}
+			}
 
 			this.setData({
 				isLoad: true,
@@ -114,6 +127,14 @@ module.exports = Behavior({
 
 			let time = this.data.meet.MEET_DAYS_SET[dayIdx].times[timeIdx];
 
+			// 7天限制检查（包含今天，所以是6天）
+			let now = timeHelper.time('Y-M-D');
+			let maxDay = timeHelper.getDateAfterDays(6, 'Y-M-D');
+			let daySet = this.data.meet.MEET_DAYS_SET[dayIdx];
+			
+			if (daySet.day > maxDay) {
+				return pageHelper.showModal('仅可预约7天内的日期，请选择其他时段');
+			}
 
 			if (time.error) {
 				if (time.error.includes('预约'))

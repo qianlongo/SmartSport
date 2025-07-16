@@ -40,7 +40,7 @@
 				<view wx:if="{{meet.MEET_DAYS_SET && meet.MEET_DAYS_SET.length > 0}}" class="vertical-box">
 					<!-- left begin -->
 					<scroll-view class="vertical-nav nav" scroll-y scroll-with-animation scroll-top="{{verticalNavTop}}" style="height:calc(100vh - 193rpx);">
-						<view class="item text-cut  {{index==tabCur?'cur text-project':''}}" wx:for="{{meet.MEET_DAYS_SET}}" wx:key="key" bindtap='bindTabSelectTap' data-idx="{{index}}" wx:if="{{item.times.length>0||canNullTime}}">
+						<view class="item text-cut {{index==tabCur?'cur text-project':''}} {{item.isOverLimit?'over-limit':''}}" wx:for="{{meet.MEET_DAYS_SET}}" wx:key="key" bindtap='bindTabSelectTap' data-idx="{{index}}" wx:if="{{item.times.length>0||canNullTime}}">
 							{{item.day}}
 						</view>
 					</scroll-view>

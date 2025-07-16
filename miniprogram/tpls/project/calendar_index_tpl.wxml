@@ -4,7 +4,7 @@
 
 	<view class="main {{skin.IS_SUB?'sub-margin-bottom':''}}" wx:if="{{isLoad}}">
 		<view class="plan-date">
-			<cmpt-calendar mode="one" hasDays="{{hasDays}}" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" />
+			<cmpt-calendar mode="one" hasDays="{{hasDays}}" limitDays="7" bind:click="bindClickCmpt" bind:monthChange="bindMonthChangeCmpt" />
 		</view>
 
 		<view class="list padding-project">
