@@ -24,7 +24,7 @@
  		NEWS_CATE: '1=场馆动态|leftpic,2=运动常识|rightpic',
 		// 去除健身房|upimg,7=健身房预约
 		// 去除台球场 |leftbig2,2=台球场预约
- 		MEET_TYPE: '1=羽毛球场预约|leftbig3,3=篮球场预约|leftbig,4=乒乓球预约|upimg,5=网球场预约|upimg,6=游泳馆预约|leftbig3',
+ 		MEET_TYPE: '1=羽毛球场预约|leftbig2,2=匹克球预约|leftbig3,3=篮球场预约|leftbig,4=乒乓球预约|upimg,5=网球场预约|upimg,6=游泳馆预约|leftbig3',
 
  		DEFAULT_FORMS: [{
  				type: 'line',
