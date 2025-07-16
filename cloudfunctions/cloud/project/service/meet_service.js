@@ -325,13 +325,72 @@ class MeetService extends BaseService {
 			this.AppError('该时段已开始，无法预约，请选择其他');
 		}
 
-		// 7天限制检查（包含今天，所以是6天）
-		let now = timeUtil.time('Y-M-D');
-		let maxDay = timeUtil.getDateAfterDays(6, 'Y-M-D');
-		if (daySet.day > maxDay) {
-			this.AppError('仅可预约7天内的日期，请选择其他时段');
+		// 获取最近7个可预约日期进行校验
+		let availableDays = await this.getAvailableDaysForCheck(meet._id);
+		let targetDay = daySet.day;
+		
+		// 检查目标日期是否在最近7个可预约日期内
+		let isInRecent7Days = false;
+		for (let i = 0; i < Math.min(7, availableDays.length); i++) {
+			if (availableDays[i] === targetDay) {
+				isInRecent7Days = true;
+				break;
+			}
+		}
+		
+		if (!isInRecent7Days) {
+			this.AppError('该日期不可预约，请选择最近7个可预约日期');
 		}
 
+	}
+
+	// 获取可预约日期用于校验（获取所有可预约日期，按日期排序）
+	async getAvailableDaysForCheck(meetId) {
+		let daysSet = await this.getDaysSet(meetId, timeUtil.time('Y-M-D')); //今天及以后
+		let availableDays = [];
+		
+		let now = timeUtil.time('Y-M-D');
+		for (let k in daysSet) {
+			let dayNode = daysSet[k];
+			
+			if (dayNode.day < now) continue; // 排除过期
+			
+			// 检查该日期是否有可预约的时段
+			let hasAvailableTime = false;
+			for (let j in dayNode.times) {
+				let timeNode = dayNode.times[j];
+				
+				// 排除状态关闭的时段
+				if (timeNode.status != 1) continue;
+				
+				// 排除人数已满的时段
+				if (timeNode.isLimit && timeNode.stat.succCnt >= timeNode.limit) continue;
+				
+				// 排除已过期的时段
+				try {
+					let daySet = this.getDaySetByTimeMark({MEET_DAYS_SET: [dayNode]}, timeNode.mark);
+					let timeSet = this.getTimeSetByTimeMark({MEET_DAYS_SET: [dayNode]}, timeNode.mark);
+					
+					let nowTime = timeUtil.time('Y-M-D h:m:s');
+					let startTime = daySet.day + ' ' + timeSet.start + ':00';
+					if (nowTime <= startTime) {
+						hasAvailableTime = true;
+						break;
+					}
+				} catch (ex) {
+					continue;
+				}
+			}
+			
+			if (hasAvailableTime) {
+				availableDays.push(dayNode.day);
+			}
+		}
+		
+		// 按日期排序
+		availableDays.sort();
+		
+		return availableDays;
 	}
 
 
@@ -370,14 +429,22 @@ class MeetService extends BaseService {
 				if (timeNode.isLimit && timeNode.stat.succCnt >= timeNode.limit)
 					timeNode.error = '预约已满';
 
-				// 截止规则
+				// 截止规则（移除7天限制，让所有可预约的日期都显示）
 				if (!timeNode.error) {
 					try {
-						await this.checkMeetEndSet(meet, timeNode.mark);
+						// 只检查是否已过期，不检查7天限制
+						let daySet = this.getDaySetByTimeMark(meet, timeNode.mark);
+						let timeSet = this.getTimeSetByTimeMark(meet, timeNode.mark);
+						
+						let nowTime = timeUtil.time('Y-M-D h:m:s');
+						let startTime = daySet.day + ' ' + timeSet.start + ':00';
+						if (nowTime > startTime) {
+							timeNode.error = '该时段已开始，无法预约，请选择其他';
+						}
 					} catch (ex) {
-						if (ex.name == 'AppError')
+						if (ex.name == 'AppError') {
 							timeNode.error = '预约结束';
-						else
+						} else
 							throw ex;
 					}
 				}
@@ -584,11 +651,11 @@ class MeetService extends BaseService {
 
 		let fields = 'times,day,DAY_MEET_ID';
 		let list = await DayModel.getAllBig(where, fields);
-		console.log('DayModel query result:', list.length, 'records');
 
 		let retList = [];
+		let now = timeUtil.time('Y-M-D');
+
 		for (let k in list) {
-			console.log('Processing day record:', list[k].day, 'meetId:', list[k].DAY_MEET_ID);
 			// 先检查对应的活动是否处于使用中状态
 			let meetWhere = {
 				_id: list[k].DAY_MEET_ID,
@@ -596,21 +663,30 @@ class MeetService extends BaseService {
 			};
 			let meet = await MeetModel.getOne(meetWhere, '_id');
 			if (!meet) {
-				console.log('Meet not found or not active for meetId:', list[k].DAY_MEET_ID);
 				continue; // 如果活动不存在或不是使用中状态，跳过
 			}
-			console.log('Meet is active for meetId:', list[k].DAY_MEET_ID);
 
 			// 再检查时间段状态
 			for (let n in list[k].times) {
 				if (list[k].times[n].status == 1) {
-					console.log('Found active time slot, adding day:', list[k].day);
-					retList.push(list[k].day);
+					retList.push({
+						day: list[k].day,
+						canBook: false // 先设为false，后面再处理
+					});
 					break;
 				}
 			}
 		}
+
+		// 按日期排序
+		retList.sort((a, b) => a.day.localeCompare(b.day));
+
+		// 前7个设为可预约
+		for (let i = 0; i < retList.length && i < 7; i++) {
+			retList[i].canBook = true;
+		}
 		console.log('Final result list:', retList);
+		console.log('Final result list length:', retList.length);
 		return retList;
 	}
 

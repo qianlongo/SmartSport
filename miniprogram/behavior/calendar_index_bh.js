@@ -13,7 +13,8 @@ module.exports = Behavior({
 		list: [],
 
 		day: '',
-		hasDays: []
+		hasDays: [],
+		hasDaysData: [] // 存储完整的可预约日期数据
 	},
 
 	methods: {
@@ -55,8 +56,22 @@ module.exports = Behavior({
 			}
 			try {
 				await cloudHelper.callCloudSumbit('meet/list_has_day', params, opts).then(res => {
+					console.log('后端返回的原始数据:', res.data);
+					
+					let hasDaysData = res.data || [];
+					let hasDays = [];
+					
+					// 提取所有有预约的日期
+					for (let k in hasDaysData) {
+						hasDays.push(hasDaysData[k].day);
+					}
+					
+					console.log('处理后的hasDays:', hasDays);
+					console.log('处理后的hasDaysData:', hasDaysData);
+					
 					this.setData({
-						hasDays: res.data,
+						hasDays: hasDays,
+						hasDaysData: hasDaysData
 					});
 				});
 			} catch (err) {

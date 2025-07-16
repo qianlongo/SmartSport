@@ -50,10 +50,18 @@ Component({
 			type: Array,
 			value: [],
 			observer: function (newVal, oldVal) {
+				console.log('hasDays changed:', newVal);
 				if (newVal.length != oldVal.length) {
 					// TODO 引起加载的时候二次调用 
 					//this._init();
 				}
+			}
+		},
+		hasDaysData: { // 完整的可预约日期数据
+			type: Array,
+			value: [],
+			observer: function (newVal, oldVal) {
+				console.log('hasDaysData changed:', newVal);
 			}
 		},
 		oneDoDay: { // 正在操作的天  string
@@ -121,10 +129,12 @@ Component({
 			if (day < now)
 				return pageHelper.showNoneToast('已过期', 1000);
 			
-			// 只对有预约的日期进行7天限制检查
-			if (this.data.hasDays && this.data.hasDays.includes(day)) {
-				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
-					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期，请选择其他时段`, 1500);
+			// 检查是否有预约且超过7天限制
+			if (this.data.hasDaysData && this.data.hasDaysData.length > 0) {
+				for (let k in this.data.hasDaysData) {
+					if (this.data.hasDaysData[k].day === day && !this.data.hasDaysData[k].canBook) {
+						return pageHelper.showNoneToast('该日期不可预约，请选择最近7个可预约日期', 1500);
+					}
 				}
 			}
 
@@ -141,10 +151,12 @@ Component({
 					return pageHelper.showNoneToast(this.data.selectTimeoutHint);
 			}
 			
-			// 只对有预约的日期进行7天限制检查
-			if (this.data.hasDays && this.data.hasDays.includes(day)) {
-				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
-					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期，请选择其他时段`, 1500);
+			// 检查是否有预约且超过7天限制
+			if (this.data.hasDaysData && this.data.hasDaysData.length > 0) {
+				for (let k in this.data.hasDaysData) {
+					if (this.data.hasDaysData[k].day === day && !this.data.hasDaysData[k].canBook) {
+						return pageHelper.showNoneToast('该日期不可预约，请选择最近7个可预约日期', 1500);
+					}
 				}
 			}
 

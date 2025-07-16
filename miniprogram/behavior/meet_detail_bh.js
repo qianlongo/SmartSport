@@ -49,15 +49,33 @@ module.exports = Behavior({
 				return;
 			}
 
-			// 为超过7天的日期添加标记
-			if (meet.MEET_DAYS_SET && meet.MEET_DAYS_SET.length > 0) {
-				let now = timeHelper.time('Y-M-D');
-				let maxDay = timeHelper.getDateAfterDays(6, 'Y-M-D'); // 7天包含今天，所以是6天
-				
+			// 获取可预约日期信息
+			let hasDaysParams = {
+				day: timeHelper.time('Y-M-D')
+			};
+			let hasDaysData = await cloudHelper.callCloudData('meet/list_has_day', hasDaysParams, opt);
+			
+			// 为详情页的日期添加可预约状态
+			if (meet.MEET_DAYS_SET && meet.MEET_DAYS_SET.length > 0 && hasDaysData && hasDaysData.length > 0) {
 				for (let i = 0; i < meet.MEET_DAYS_SET.length; i++) {
 					let daySet = meet.MEET_DAYS_SET[i];
-					if (daySet.day > maxDay) {
-						daySet.isOverLimit = true;
+					// 查找该日期是否在可预约列表中
+					let canBook = false;
+					for (let j = 0; j < hasDaysData.length; j++) {
+						if (hasDaysData[j].day === daySet.day) {
+							canBook = hasDaysData[j].canBook;
+							break;
+						}
+					}
+					daySet.canBook = canBook;
+					
+					// 如果不可预约，为所有时段添加错误信息
+					if (!canBook) {
+						for (let k = 0; k < daySet.times.length; k++) {
+							if (!daySet.times[k].error) {
+								daySet.times[k].error = '暂不可预约';
+							}
+						}
 					}
 				}
 			}
@@ -65,7 +83,6 @@ module.exports = Behavior({
 			this.setData({
 				isLoad: true,
 				meet, 
-
 				canNullTime: setting.MEET_CAN_NULL_TIME
 			});
 
@@ -127,20 +144,14 @@ module.exports = Behavior({
 
 			let time = this.data.meet.MEET_DAYS_SET[dayIdx].times[timeIdx];
 
-			// 7天限制检查（包含今天，所以是6天）
-			let now = timeHelper.time('Y-M-D');
-			let maxDay = timeHelper.getDateAfterDays(6, 'Y-M-D');
-			let daySet = this.data.meet.MEET_DAYS_SET[dayIdx];
-			
-			if (daySet.day > maxDay) {
-				return pageHelper.showModal('仅可预约7天内的日期，请选择其他时段');
-			}
-
 			if (time.error) {
-				if (time.error.includes('预约'))
+				if (time.error.includes('暂不可预约')) {
+					return pageHelper.showModal('该日期不可预约，请选择最近7个可预约日期');
+				} else if (time.error.includes('预约')) {
 					return pageHelper.showModal('该时段' + time.error + '，换一个时段试试吧！');
-				else
+				} else {
 					return pageHelper.showModal('该时段预约' + time.error + '，换一个时段试试吧！');
+				}
 			}
 
 			let meetId = this.data.id;
