@@ -52,6 +52,9 @@ Page({
 			return;
 		}
 
+		// 确保 formDaysSet 是数组格式
+		let formDaysSet = meet.MEET_DAYS_SET || [];
+
 		this.setData({
 			isLoad: true,
 
@@ -63,7 +66,7 @@ Page({
 			formOrder: meet.MEET_ORDER,
 			formStyleSet: meet.MEET_STYLE_SET,
 
-			formDaysSet: meet.MEET_DAYS_SET,
+			formDaysSet: formDaysSet,
 
 			formIsShowLimit: meet.MEET_IS_SHOW_LIMIT,
 
@@ -198,6 +201,8 @@ Page({
 			return pageHelper.formHint(this, 'formDaysSet', '请配置「可预约时段」');
 		}
 		if (data.formFormSet.length <= 0) return pageHelper.showModal('请至少设置一项「用户填写资料」');
+
+
 
 		data = validate.check(data, AdminMeetBiz.CHECK_FORM, this);
 		if (!data) return;

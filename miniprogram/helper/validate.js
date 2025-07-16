@@ -378,7 +378,7 @@
  					try {
  						defVal = JSON.parse(defVal);
 
- 						if (getDataType(defVal) != Array)
+ 						if (!Array.isArray(defVal))
  							return _showError(desc + '默认值数组格式错误', formName, that);
  					} catch (ex) {
  						return _showError(desc + '默认值数组格式错误', formName, that);
@@ -386,7 +386,7 @@
  				}
  				if (val === null || val === undefined) val = defVal;
 
-				if (val !== undefined && getDataType(val) != Array)
+				if (val !== undefined && !Array.isArray(val))
  					return _showError(desc + '数组格式错误', formName, that);
 
  				break;

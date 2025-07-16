@@ -56,8 +56,6 @@ module.exports = Behavior({
 			}
 			try {
 				await cloudHelper.callCloudSumbit('meet/list_has_day', params, opts).then(res => {
-					console.log('后端返回的原始数据:', res.data);
-					
 					let hasDaysData = res.data || [];
 					let hasDays = [];
 					
@@ -65,9 +63,6 @@ module.exports = Behavior({
 					for (let k in hasDaysData) {
 						hasDays.push(hasDaysData[k].day);
 					}
-					
-					console.log('处理后的hasDays:', hasDays);
-					console.log('处理后的hasDaysData:', hasDaysData);
 					
 					this.setData({
 						hasDays: hasDays,
