@@ -553,7 +553,119 @@ class AdminMeetService extends BaseAdminService {
    * 特殊约定 99=>正常取消
    */
   async statusJoin(admin, joinId, status, reason = "") {
-    this.AppError("此功能暂不开放，如有需要请加作者微信：cclinux0730");
+    try {
+      // 先获取预约记录信息
+      let where = {
+        _id: joinId,
+      };
+      let join = await JoinModel.getOne(where, 'JOIN_ID,JOIN_STATUS,JOIN_MEET_ID,JOIN_MEET_TIME_MARK,JOIN_USER_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END');
+      
+      if (!join) {
+        this.AppError("预约记录不存在");
+        return {
+          result: "error",
+          msg: "预约记录不存在",
+        }
+      }
+      
+      // 检查状态转换的合理性
+      let oldStatus = join.JOIN_STATUS;
+      let newStatus = status;
+      
+      // 如果状态没有变化，直接返回成功
+      if (oldStatus == newStatus) {
+        return {
+          result: "ok",
+          msg: "状态未发生变化",
+        }
+      }
+      
+      // 检查状态转换是否合理
+      if (oldStatus == JoinModel.STATUS.SUCC && newStatus == JoinModel.STATUS.SUCC) {
+        this.AppError("预约已经是成功状态，无法重复设置");
+        return {
+          result: "error",
+          msg: "预约已经是成功状态，无法重复设置",
+        }
+      }
+      
+      // 如果是从成功状态改为其他状态，需要检查是否可以取消
+      if (oldStatus == JoinModel.STATUS.SUCC && (newStatus == JoinModel.STATUS.CANCEL || newStatus == JoinModel.STATUS.ADMIN_CANCEL)) {
+        // 检查是否已经签到
+        if (join.JOIN_IS_CHECKIN == 1) {
+          this.AppError("已签到的预约不能取消");
+          return {
+            result: "error",
+            msg: "已签到的预约不能取消",
+          }
+        }
+        
+        // 检查是否已经开始
+        let startTime = timeUtil.time2Timestamp(join.JOIN_MEET_DAY + ' ' + join.JOIN_MEET_TIME_START + ':00');
+        let now = timeUtil.time();
+        if (now > startTime) {
+          this.AppError("该预约已经开始，无法取消");
+          return {
+            result: "error",
+            msg: "该预约已经开始，无法取消",
+          }
+        }
+      }
+      
+      // 更新预约状态
+      let data = {
+        JOIN_STATUS: status,
+        JOIN_REASON: reason,
+        JOIN_EDIT_TIME: timeUtil.time(),
+        JOIN_EDIT_ADMIN_ID: admin._id || admin,
+        JOIN_EDIT_ADMIN_NAME: admin.name || '管理员',
+        JOIN_EDIT_ADMIN_TIME: timeUtil.time(),
+        JOIN_EDIT_ADMIN_STATUS: status,
+      };
+      await JoinModel.edit(where, data);
+      
+      // 更新统计信息
+      if (oldStatus == JoinModel.STATUS.SUCC || newStatus == JoinModel.STATUS.SUCC) {
+        let meetService = new MeetService();
+        await meetService.statJoinCnt(join.JOIN_MEET_ID, join.JOIN_MEET_TIME_MARK);
+      }
+      
+      let statusText = '';
+      switch (status) {
+        case JoinModel.STATUS.SUCC:
+          statusText = '预约成功';
+          break;
+        case JoinModel.STATUS.CANCEL:
+          statusText = '已取消';
+          break;
+        case JoinModel.STATUS.ADMIN_CANCEL:
+          statusText = '系统取消';
+          break;
+        default:
+          statusText = '未知状态';
+      }
+      
+      return {
+        result: "ok",
+        msg: "状态修改成功",
+        data: {
+          oldStatus: oldStatus,
+          newStatus: newStatus,
+          statusText: statusText,
+          userName: join.JOIN_USER_ID,
+          meetTitle: join.JOIN_MEET_TITLE,
+          meetDay: join.JOIN_MEET_DAY,
+          meetTime: join.JOIN_MEET_TIME_START + ' - ' + join.JOIN_MEET_TIME_END,
+          reason: reason,
+        }
+      };
+    } catch (error) {
+      this.AppError("修改报名状态失败：" + error.message);
+      return {
+        result: "error",
+        msg: error.message,
+      };
+    } 
   }
 
   /**修改项目状态 */

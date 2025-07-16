@@ -506,6 +506,14 @@ class MeetService extends BaseService {
 
 	/** 获取某天可用时段 */
 	async getUsefulTimesByDaysSet(meetId, day) {
+		// 先检查活动是否处于使用中状态
+		let meetWhere = {
+			_id: meetId,
+			MEET_STATUS: MeetModel.STATUS.COMM // 只检查使用中的活动
+		};
+		let meet = await MeetModel.getOne(meetWhere, '_id');
+		if (!meet) return []; // 如果活动不存在或不是使用中状态，返回空数组
+
 		let where = {
 			DAY_MEET_ID: meetId,
 			day
@@ -562,22 +570,40 @@ class MeetService extends BaseService {
 
 	/** 获取从某天开始可预约的日期 */
 	async getHasDaysFromDay(day) {
+		console.log('getHasDaysFromDay called with day:', day);
 		let where = {
 			day: ['>=', day],
 		};
 
-		let fields = 'times,day';
+		let fields = 'times,day,DAY_MEET_ID';
 		let list = await DayModel.getAllBig(where, fields);
+		console.log('DayModel query result:', list.length, 'records');
 
 		let retList = [];
 		for (let k in list) {
+			console.log('Processing day record:', list[k].day, 'meetId:', list[k].DAY_MEET_ID);
+			// 先检查对应的活动是否处于使用中状态
+			let meetWhere = {
+				_id: list[k].DAY_MEET_ID,
+				MEET_STATUS: MeetModel.STATUS.COMM // 只检查使用中的活动
+			};
+			let meet = await MeetModel.getOne(meetWhere, '_id');
+			if (!meet) {
+				console.log('Meet not found or not active for meetId:', list[k].DAY_MEET_ID);
+				continue; // 如果活动不存在或不是使用中状态，跳过
+			}
+			console.log('Meet is active for meetId:', list[k].DAY_MEET_ID);
+
+			// 再检查时间段状态
 			for (let n in list[k].times) {
 				if (list[k].times[n].status == 1) {
+					console.log('Found active time slot, adding day:', list[k].day);
 					retList.push(list[k].day);
 					break;
 				}
 			}
 		}
+		console.log('Final result list:', retList);
 		return retList;
 	}
 
@@ -602,7 +628,7 @@ class MeetService extends BaseService {
 
 		let where = {};
 		if (typeId && typeId !== '0') where.MEET_TYPE_ID = typeId;
-		console.log(typeId)
+		
 		where.MEET_STATUS = ['in', [MeetModel.STATUS.COMM, MeetModel.STATUS.OVER]]; // 状态  
 
 		if (util.isDefined(search) && search) {

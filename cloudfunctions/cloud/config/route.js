@@ -37,26 +37,26 @@ module.exports = {
 	'admin/home': 'admin/admin_home_controller@adminHome',
 	'admin/clear_cache': 'admin/admin_home_controller@clearCache#noDemo', // 清除缓存|已支持
 
-	'admin/setup_about': 'admin/admin_setup_controller@setupAbout#noDemo',
-	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo', 
+	'admin/setup_about': 'admin/admin_setup_controller@setupAbout#noDemo', // 关于我们 不需要
+	'admin/setup_contact': 'admin/admin_setup_controller@setupContact#noDemo', // 联系方式 不需要
 	'admin/setup_qr': 'admin/admin_setup_controller@genMiniQr', 
 
 	'admin/news_list': 'admin/admin_news_controller@getNewsList', // 文章列表|已支持
-	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo', // 添加文章
-	'admin/news_detail': 'admin/admin_news_controller@getNewsDetail',
-	'admin/news_edit': 'admin/admin_news_controller@editNews#noDemo', // 修改文章|
+	'admin/news_insert': 'admin/admin_news_controller@insertNews#noDemo', // 添加文章|已支持
+	'admin/news_detail': 'admin/admin_news_controller@getNewsDetail', // 文章详情|已支持
+	'admin/news_edit': 'admin/admin_news_controller@editNews#noDemo', // 修改文章|已支持
 	'admin/news_update_pic': 'admin/admin_news_controller@updateNewsPic#noDemo', // 上传封面图
 	'admin/news_update_content': 'admin/admin_news_controller@updateNewsContent#noDemo', // 更新文章内容|已支持
 	'admin/news_del': 'admin/admin_news_controller@delNews#noDemo',  // 删除文章|已支持
 	'admin/news_sort': 'admin/admin_news_controller@sortNews#noDemo', // 上首页| 已支持
 	'admin/news_status': 'admin/admin_news_controller@statusNews#noDemo', // 修改文章状态| 启用/停用 已支持
 
-	'admin/meet_list': 'admin/admin_meet_controller@getMeetList',
-	'admin/meet_join_list': 'admin/admin_meet_controller@getJoinList', // 预约列表|
-	'admin/join_status': 'admin/admin_meet_controller@statusJoin#noDemo',
-	'admin/join_del': 'admin/admin_meet_controller@delJoin#noDemo',
+	'admin/meet_list': 'admin/admin_meet_controller@getMeetList',// 活动列表|已支持
+	'admin/meet_join_list': 'admin/admin_meet_controller@getJoinList', // 预约列表|已支持
+	'admin/join_status': 'admin/admin_meet_controller@statusJoin#noDemo', // 预约状态|已支持
+	'admin/join_del': 'admin/admin_meet_controller@delJoin#noDemo', // 删除预约|已支持
 	'admin/meet_insert': 'admin/admin_meet_controller@insertMeet#noDemo', // 插入活动 |已支持
-	'admin/meet_detail': 'admin/admin_meet_controller@getMeetDetail',
+	'admin/meet_detail': 'admin/admin_meet_controller@getMeetDetail', // 活动详情|已支持
 	'admin/meet_edit': 'admin/admin_meet_controller@editMeet#noDemo', // 修改活动|已支持
 	'admin/meet_del': 'admin/admin_meet_controller@delMeet#noDemo', // 删除活动|已支持
 	'admin/meet_update_content': 'admin/admin_meet_controller@updateMeetContent#noDemo', // 更新活动内容|已支持
