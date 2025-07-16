@@ -124,7 +124,7 @@ Component({
 			// 只对有预约的日期进行7天限制检查
 			if (this.data.hasDays && this.data.hasDays.includes(day)) {
 				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
-					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期`, 1500);
+					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期，请选择其他时段`, 1500);
 				}
 			}
 
@@ -144,7 +144,7 @@ Component({
 			// 只对有预约的日期进行7天限制检查
 			if (this.data.hasDays && this.data.hasDays.includes(day)) {
 				if (this.data.limitDays > 0 && this.data.maxBookDay && day > this.data.maxBookDay) {
-					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期`, 1500);
+					return pageHelper.showNoneToast(`仅可预约${this.data.limitDays}天内的日期，请选择其他时段`, 1500);
 				}
 			}
 

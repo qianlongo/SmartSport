@@ -329,7 +329,7 @@ class MeetService extends BaseService {
 		let now = timeUtil.time('Y-M-D');
 		let maxDay = timeUtil.getDateAfterDays(6, 'Y-M-D');
 		if (daySet.day > maxDay) {
-			this.AppError('仅可预约7天内的日期');
+			this.AppError('仅可预约7天内的日期，请选择其他时段');
 		}
 
 	}
