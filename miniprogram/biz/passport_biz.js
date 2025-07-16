@@ -44,7 +44,7 @@ class PassportBiz extends BaseBiz {
 
 		skin.IS_SUB = setting.IS_SUB;
 		if (isLoadSkin) {
-			skin.newsCateArr = dataHelper.getSelectOptions(skin.NEWS_CATE);
+			skin.newsCateArr = dataHelper.getSelectOptions('');
 			skin.meetTypeArr = dataHelper.getSelectOptions(skin.MEET_TYPE);
 			that.setData({
 				skin
