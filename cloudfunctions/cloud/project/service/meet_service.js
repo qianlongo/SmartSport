@@ -16,6 +16,7 @@ const config = require('../../config/config.js');
 const PassportService = require('../service/passport_service.js');
 const cloudBase = require('../../framework/cloud/cloud_base.js');
 const UserModel = require('../model/user_model.js');
+const cacheUtil = require('../../framework/utils/cache_util.js');
 
 class MeetService extends BaseService {
 
@@ -645,46 +646,66 @@ class MeetService extends BaseService {
 	/** 获取从某天开始可预约的日期 */
 	async getHasDaysFromDay(day) {
 		console.log('getHasDaysFromDay called with day:', day);
+		
+		// 尝试从缓存获取
+		let cacheKey = `hasDays_${day}`;
+		let cached = await cacheUtil.get(cacheKey);
+		if (cached) {
+			console.log('Returning cached result');
+			return cached;
+		}
+		
+		// 第一步：获取所有使用中状态的场馆ID（限制查询范围）
+		let meetWhere = {
+			MEET_STATUS: MeetModel.STATUS.COMM // 只查询使用中的活动
+		};
+		let meetList = await MeetModel.getAll(meetWhere, '_id', {}, 100); // 限制最多100个场馆
+		let meetIds = meetList.map(item => item._id);
+		
+		if (meetIds.length === 0) {
+			// 缓存空结果
+			await cacheUtil.set(cacheKey, [], 300); // 缓存5分钟
+			return [];
+		}
+
+		// 第二步：只查询使用中场馆的日期记录（限制查询范围）
 		let where = {
 			day: ['>=', day],
+			DAY_MEET_ID: ['in', meetIds] // 只查询使用中场馆的日期
 		};
 
 		let fields = 'times,day,DAY_MEET_ID';
-		let list = await DayModel.getAllBig(where, fields);
+		let list = await DayModel.getAllBig(where, fields, {}, 500); // 限制最多500条记录
 
-		let retList = [];
-		let now = timeUtil.time('Y-M-D');
+		let daySet = new Set(); // 使用Set来去重
 
+		// 第三步：处理日期数据（不需要再查询场馆状态）
 		for (let k in list) {
-			// 先检查对应的活动是否处于使用中状态
-			let meetWhere = {
-				_id: list[k].DAY_MEET_ID,
-				MEET_STATUS: MeetModel.STATUS.COMM // 只检查使用中的活动
-			};
-			let meet = await MeetModel.getOne(meetWhere, '_id');
-			if (!meet) {
-				continue; // 如果活动不存在或不是使用中状态，跳过
-			}
-
-			// 再检查时间段状态
+			// 直接检查时间段状态
 			for (let n in list[k].times) {
 				if (list[k].times[n].status == 1) {
-					retList.push({
-						day: list[k].day,
-						canBook: false // 先设为false，后面再处理
-					});
+					daySet.add(list[k].day); // 使用Set来去重
 					break;
 				}
 			}
 		}
 
-		// 按日期排序
+		// 转换为数组并排序
+		let retList = Array.from(daySet).map(day => ({
+			day: day,
+			canBook: false // 先设为false，后面再处理
+		}));
+		
 		retList.sort((a, b) => a.day.localeCompare(b.day));
 
 		// 前7个设为可预约
 		for (let i = 0; i < retList.length && i < 7; i++) {
 			retList[i].canBook = true;
 		}
+		
+		// 缓存结果
+		await cacheUtil.set(cacheKey, retList, 300); // 缓存5分钟
+		
 		console.log('Final result list:', retList);
 		console.log('Final result list length:', retList.length);
 		return retList;

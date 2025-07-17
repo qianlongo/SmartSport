@@ -2,6 +2,7 @@ const AdminBiz = require('../../../../biz/admin_biz.js');
 const AdminMeetBiz = require('../../../../biz/admin_meet_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
+const bizHelper = require('../../../../biz/biz_helper.js');
 
 Page({
 
@@ -101,7 +102,7 @@ Page({
 	},
 
 	bindMoreSelectTap: async function (e) {
-		let itemList = ['预览'];
+		let itemList = ['预览', '复制场馆'];
 		let meetId = pageHelper.dataset(e, 'id');
 		wx.showActionSheet({
 			itemList,
@@ -111,6 +112,10 @@ Page({
 						wx.navigateTo({
 							url: pageHelper.fmtURLByPID('/pages/meet/detail/meet_detail?id=' + meetId),
 						});
+						break;
+					}
+					case 1: { //复制场馆
+						await this._copyMeet(meetId, this);
 						break;
 					}
 				}
@@ -227,6 +232,31 @@ Page({
 					dataList: that.data.dataList
 				});
 				pageHelper.showSuccToast('设置成功');
+			});
+		} catch (e) {
+			console.log(e);
+		}
+	},
+
+	_copyMeet: async function (meetId, that) {
+		if (!AdminBiz.isAdmin(this)) return;
+		if (!meetId) return;
+
+		try {
+			let params = {
+				meetId
+			}
+			await cloudHelper.callCloudSumbit('admin/meet_copy', params).then(res => {
+				pageHelper.showSuccToast('复制成功，新场馆已创建为关闭状态');
+				// 刷新列表
+				setTimeout(() => {
+					// 清除缓存
+					bizHelper.removeCacheList('admin-meet');
+					// 强制刷新页面
+					wx.reLaunch({
+						url: '/pages/admin/meet/list/admin_meet_list'
+					});
+				}, 1000);
 			});
 		} catch (e) {
 			console.log(e);

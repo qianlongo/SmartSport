@@ -56,6 +56,7 @@ module.exports = {
 	'admin/join_status': 'admin/admin_meet_controller@statusJoin#noDemo', // 预约状态|已支持
 	'admin/join_del': 'admin/admin_meet_controller@delJoin#noDemo', // 删除预约|已支持
 	'admin/meet_insert': 'admin/admin_meet_controller@insertMeet#noDemo', // 插入活动 |已支持
+	'admin/meet_copy': 'admin/admin_meet_controller@copyMeet#noDemo', // 复制活动 |已支持
 	'admin/meet_detail': 'admin/admin_meet_controller@getMeetDetail', // 活动详情|已支持
 	'admin/meet_edit': 'admin/admin_meet_controller@editMeet#noDemo', // 修改活动|已支持
 	'admin/meet_del': 'admin/admin_meet_controller@delMeet#noDemo', // 删除活动|已支持

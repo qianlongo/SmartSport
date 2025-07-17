@@ -242,7 +242,7 @@ class AdminMeetService extends BaseAdminService {
         MEET_DAYS: days, // 保存可用日期数组
         MEET_IS_SHOW_LIMIT: isShowLimit,
         MEET_FORM_SET: formSet,
-        MEET_STATUS: MeetModel.STATUS.COMM, // 默认使用中状态
+        MEET_STATUS: MeetModel.STATUS.CLOSE, // 默认关闭状态（用户不可见）
       });
 
       // 处理日期设置到day表
@@ -255,6 +255,64 @@ class AdminMeetService extends BaseAdminService {
       };
     } catch (error) {
       this.AppError("插入活动失败：" + error.message);
+    }
+  }
+
+  /** 复制场馆 */
+  async copyMeet(adminId, meetId) {
+    try {
+      // 获取原场馆信息
+      let where = {
+        _id: meetId,
+      };
+      let meet = await MeetModel.getOne(where, "*");
+      if (!meet) {
+        this.AppError("原场馆不存在");
+      }
+
+      // 获取原场馆的日期设置
+      let meetService = new MeetService();
+      let daysSet = await meetService.getDaysSet(meetId, timeUtil.time("Y-M-D"));
+
+      // 生成新标题（添加"副本"后缀）
+      let newTitle = meet.MEET_TITLE + " (副本)";
+      
+      // 处理日期设置，提取可用日期
+      let days = [];
+      if (daysSet && Array.isArray(daysSet)) {
+        for (let k in daysSet) {
+          if (daysSet[k].day) {
+            days.push(daysSet[k].day);
+          }
+        }
+      }
+
+      // 创建新场馆
+      let newMeetId = await MeetModel.insert({
+        MEET_ADMIN_ID: adminId,
+        MEET_TITLE: newTitle,
+        MEET_ORDER: meet.MEET_ORDER + 1, // 排序号+1
+        MEET_TYPE_ID: meet.MEET_TYPE_ID,
+        MEET_TYPE_NAME: meet.MEET_TYPE_NAME,
+        MEET_CONTENT: meet.MEET_CONTENT, // 复制详细介绍
+        MEET_STYLE_SET: meet.MEET_STYLE_SET, // 复制样式设置
+        MEET_DAYS: days, // 保存可用日期数组
+        MEET_IS_SHOW_LIMIT: meet.MEET_IS_SHOW_LIMIT,
+        MEET_FORM_SET: meet.MEET_FORM_SET, // 复制表单设置
+        MEET_STATUS: MeetModel.STATUS.CLOSE, // 默认关闭状态（用户不可见）
+      });
+
+      // 复制日期设置到day表
+      if (daysSet && Array.isArray(daysSet)) {
+        await this._editDays(newMeetId, timeUtil.time("Y-M-D"), daysSet);
+      }
+
+      return {
+        id: newMeetId,
+        title: newTitle,
+      };
+    } catch (error) {
+      this.AppError("复制场馆失败：" + error.message);
     }
   }
 

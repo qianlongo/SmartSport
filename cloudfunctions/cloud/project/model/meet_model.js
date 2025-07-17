@@ -44,7 +44,7 @@ MeetModel.DB_STRUCTURE = {
 	MEET_FORM_SET: 'array|true|default=[]|comment=表单字段设置',
 
 
-	MEET_STATUS: 'int|true|default=1|comment=状态 0=未启用,1=使用中,9=停止预约,10=已关闭',
+	MEET_STATUS: 'int|true|default=10|comment=状态 0=未启用,1=使用中,9=停止预约,10=已关闭',
 	MEET_ORDER: 'int|true|default=9999',
 
 	MEET_ADD_TIME: 'int|true',

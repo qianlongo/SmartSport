@@ -271,6 +271,29 @@ class AdminMeetController extends BaseAdminController {
 
 	}
 
+	/** 复制场馆 */
+	async copyMeet() {
+		await this.isAdmin();
+
+		let rules = {
+			meetId: 'must|id|name=场馆ID',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		let service = new AdminMeetService();
+		let result = await service.copyMeet(this._adminId, input.meetId);
+
+		// 清空缓存
+		cacheUtil.clear();
+
+		this.log('复制了场馆《' + result.title + '》', LogModel.TYPE.MEET);
+
+		return result;
+
+	}
+
 
 	/** 获取预约信息用于编辑修改 */
 	async getMeetDetail() {

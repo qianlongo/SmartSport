@@ -2,7 +2,7 @@
 	<cmpt-comm-list type="admin-meet" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/meet_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索标题" bind:list="bindCommListCmpt">
 
 		<view slot="searchEnd">
-			<button bindtap="url" data-url="../edit/admin_meet_edit" class="btn radius bg-admin text-white  margin-right-s"><text class="icon-roundadd margin-right-xxs"></text>创建活动/预约</button>
+			<button bindtap="url" data-url="../edit/admin_meet_edit" class="btn radius bg-admin text-white  margin-right-s"><text class="icon-roundadd margin-right-xxs"></text>创建场馆</button>
 		</view>
 
 		<!-- List Begin -->
