@@ -89,5 +89,12 @@ module.exports = {
 	'admin/user_data_export': 'admin/admin_export_controller@userDataExport',
 	'admin/user_data_del': 'admin/admin_export_controller@userDataDel#noDemo',
 
+	'admin/internal_user_list': 'admin/admin_internal_user_controller@getInternalUserList',
+	'admin/internal_user_import': 'admin/admin_internal_user_controller@importInternalUserData#noDemo',
+
+
+	'admin/internal_user_del': 'admin/admin_internal_user_controller@delInternalUser#noDemo',
+	'admin/internal_user_status': 'admin/admin_internal_user_controller@statusInternalUser#noDemo',
+	'admin/internal_user_template': 'admin/admin_internal_user_controller@generateImportTemplate',
 
 }

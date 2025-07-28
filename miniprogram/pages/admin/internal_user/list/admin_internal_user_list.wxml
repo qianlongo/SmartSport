@@ -1,0 +1,77 @@
+<block wx:if="{{isAdmin}}">
+	<cmpt-comm-list type="admin-internal-user" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/internal_user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索姓名、手机号、单位" bind:list="bindCommListCmpt" sortMenusDefaultIndex="0">
+
+		<view slot="searchEnd">
+			<button bindtap="url" data-url="../../user/list/admin_user_list" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导入内部人员</button>
+		</view>
+
+		<!-- List Begin -->
+		<view class="admin-comm-list">
+			<view wx:if="{{dataList && dataList.total }}" class="load text-grey">共有{{dataList.total}}条符合条件记录 </view>
+
+			<view class="item" wx:for="{{dataList.list}}" wx:key="key">
+				<view class="header">
+					<view class="left text-cut">{{item.INTERNAL_USER_NAME}}
+					</view>
+					<view class="right">
+						<text wx:if="{{item.INTERNAL_USER_STATUS==0}}" class="text-grey">已禁用</text>
+						<text wx:elif="{{item.INTERNAL_USER_STATUS==1}}" class="text-black">正常</text>
+					</view>
+				</view>
+
+				<view class="info">
+					<view class="info-item" bindtap="url" data-type="phone" data-url="{{item.INTERNAL_USER_MOBILE}}">
+						<view class="title">手机</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_MOBILE||'未填写'}} <text wx:if="{{item.INTERNAL_USER_MOBILE}}" class="icon-phone margin-left-s"></text></view>
+					</view> 
+
+					<view class="info-item">
+						<view class="title">城市</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_CITY||'未填写'}}</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">行业</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_TRADE||'未填写'}}</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">单位</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_WORK||'未填写'}}</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">导入时间</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_IMPORT_TIME}}</view>
+					</view>
+
+					<view class="info-item">
+						<view class="title">导入管理员</view>
+						<view class="mao">：</view>
+						<view class="content">{{item.INTERNAL_USER_IMPORT_ADMIN_NAME||'未知'}}</view>
+					</view>
+
+					<view class="oprt">
+						<view wx:if="{{item.INTERNAL_USER_STATUS==1}}" bindtap="bindStatusTap" data-id="{{item.INTERNAL_USER_ID}}" data-status="0" class="btn margin-right-s"><text class="icon-stop margin-right-xxs text-orange"></text>禁用</view>
+						<view wx:elif="{{item.INTERNAL_USER_STATUS==0}}" bindtap="bindStatusTap" data-id="{{item.INTERNAL_USER_ID}}" data-status="1" class="btn margin-right-s"><text class="icon-play margin-right-xxs text-green"></text>启用</view>
+
+						<view bindtap="bindDelTap" data-id="{{item.INTERNAL_USER_ID}}" class="btn"><text class="icon-delete margin-right-xxs text-red"></text>删除</view>
+					</view>
+				</view>
+			</view>
+		</view>
+		<!-- List END -->
+
+		<!--load begin-->
+		<import src="../../../../tpls/public/list_load_tpl.wxml" />
+		<template is="listLoadTpl" data="{{skin:'text-grey',dataList}}" />
+		<!--load end-->
+
+	</cmpt-comm-list>
+
+</block> 

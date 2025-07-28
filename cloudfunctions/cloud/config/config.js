@@ -18,7 +18,7 @@ module.exports = {
 	TEST_MODE: false,  
 	TEST_TOKEN_ID: '',
 
-	COLLECTION_NAME: 'ax_admin|ax_cache|ax_day|ax_export|ax_join|ax_log|ax_meet|ax_news|ax_setup|ax_temp|ax_user',
+	COLLECTION_NAME: 'ax_admin|ax_cache|ax_day|ax_export|ax_internal_user|ax_join|ax_log|ax_meet|ax_news|ax_setup|ax_temp|ax_user',
 
 	DATA_EXPORT_PATH: 'export/', //数据导出路径
 	MEET_TIMEMARK_QR_PATH: 'meet/usercheckin/', //用户签到码路径 

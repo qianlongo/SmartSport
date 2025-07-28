@@ -65,7 +65,7 @@ Page({
 	},
 
 	bindRecordSelectTap: async function (e) {
-		let itemList = ['预约名单', '导出名单Excel文件', '管理员核销预约码', '用户自助签到码'];
+		let itemList = ['预约名单', '管理员核销预约码', '用户自助签到码'];
 		let meetId = pageHelper.dataset(e, 'id');
 		let title = encodeURIComponent(pageHelper.dataset(e, 'title'));
 

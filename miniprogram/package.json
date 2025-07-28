@@ -1,0 +1,15 @@
+{
+  "name": "smartsport-miniprogram",
+  "version": "1.0.0",
+  "description": "SmartSport Mini Program",
+  "main": "app.js",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "build": "echo 'Build completed'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+} 

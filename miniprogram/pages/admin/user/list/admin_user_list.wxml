@@ -2,7 +2,8 @@
 	<cmpt-comm-list type="admin-meet" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索" bind:list="bindCommListCmpt" sortMenusDefaultIndex="0">
 
 		<view slot="searchEnd">
-			<button bindtap="url" data-url="../export/admin_user_export?condition={{dataList.condition}}" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导出用户资料</button>
+			<button bindtap="bindImportExportTap" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导入内部人员</button>
+			<button bindtap="url" data-url="../internal_user/list/admin_internal_user_list" class="btn mid radius bg-purple text-white"><text class="icon-list margin-right-xxs"></text>内部人员管理</button>
 		</view>
 
 		<!-- List Begin -->

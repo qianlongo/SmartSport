@@ -323,7 +323,7 @@ class MeetService extends BaseService {
 		let startTime = daySet.day + ' ' + timeSet.start + ':00';
 		this._meetLog(meet, `预约开始规则,mode=<时段过期判定>`, `预约开始时段=${startTime},当前时段=${nowTime}`);
 		if (nowTime > startTime) {
-			this.AppError('该时段已开始，无法预约，请选择其他');
+			this.AppError('该时段已过期');
 		}
 
 		// 获取最近7个可预约日期进行校验
@@ -440,7 +440,7 @@ class MeetService extends BaseService {
 						let nowTime = timeUtil.time('Y-M-D h:m:s');
 						let startTime = daySet.day + ' ' + timeSet.start + ':00';
 						if (nowTime > startTime) {
-							timeNode.error = '该时段已开始，无法预约，请选择其他';
+							timeNode.error = '该时段已过期';
 						}
 					} catch (ex) {
 						if (ex.name == 'AppError') {
