@@ -3,6 +3,7 @@ const pageHelper = require('../helper/page_helper.js');
 const cloudHelper = require('../helper/cloud_helper.js');
 const timeHelper = require('../helper/time_helper.js');
 const PassortBiz = require('../biz/passport_biz.js');
+const AdminBiz = require('../biz/admin_biz.js');
 const setting = require('../setting/setting.js');
 
 module.exports = Behavior({
@@ -115,14 +116,24 @@ module.exports = Behavior({
 
 					if (idx == 1) {
 						pageHelper.setSkin(skin);
-						if (setting.IS_SUB) {
-							PassortBiz.adminLogin('admin', '123456', this);
-						} else {
+						
+						// 检查是否已经登录
+						let admin = AdminBiz.getAdminToken();
+						if (admin) {
+							// 已登录，直接跳转到后台首页
 							wx.reLaunch({
-								url: '/pages/admin/index/login/admin_login',
+								url: '/pages/admin/index/home/admin_home',
 							});
+						} else {
+							// 未登录，跳转到登录页面
+							if (setting.IS_SUB) {
+								PassortBiz.adminLogin('admin', '123456', this);
+							} else {
+								wx.reLaunch({
+									url: '/pages/admin/index/login/admin_login',
+								});
+							}
 						}
-
 					}
 
 				},

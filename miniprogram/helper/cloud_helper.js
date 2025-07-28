@@ -233,12 +233,13 @@
 
  	let page = params.page;
  	let count = that.data[listName].count;
- 	if (page > 1 && page > count) {
- 		wx.showToast({
- 			duration: 500,
- 			icon: 'none',
- 			title: '没有更多数据了',
- 		});
+ 	// 只有在确实没有更多数据时才显示提示
+ 	if (page > 1 && that.data[listName].total && that.data[listName].list.length >= that.data[listName].total) {
+ 		// wx.showToast({
+ 		// 	duration: 500,
+ 		// 	icon: 'none',
+ 		// 	title: '没有更多数据了',
+ 		// });
  		return;
  	}
 

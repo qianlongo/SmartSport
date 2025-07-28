@@ -42,7 +42,8 @@
 		"pages/admin/setup/contact/admin_setup_contact",
 		"pages/admin/setup/qr/admin_setup_qr",
 		"pages/admin/user/list/admin_user_list",
-		"pages/admin/user/export/admin_user_export"
+		"pages/admin/user/export/admin_user_export",
+		"pages/admin/internal_user/list/admin_internal_user_list"
 
 	],
 	"window": {

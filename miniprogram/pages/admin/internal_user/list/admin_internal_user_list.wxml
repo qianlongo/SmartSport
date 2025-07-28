@@ -2,7 +2,7 @@
 	<cmpt-comm-list type="admin-internal-user" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/internal_user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索姓名、手机号、单位" bind:list="bindCommListCmpt" sortMenusDefaultIndex="0">
 
 		<view slot="searchEnd">
-			<button bindtap="url" data-url="../../user/list/admin_user_list" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导入内部人员</button>
+			<button bindtap="bindImportExportTap" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导入内部人员</button>
 		</view>
 
 		<!-- List Begin -->

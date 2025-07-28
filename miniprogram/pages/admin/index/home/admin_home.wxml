@@ -37,9 +37,16 @@
 		</view>
 		<view class="item" bindtap="url" data-url="../../user/list/admin_user_list"> <text class="icon-peoplefill text-green"></text> <text class="text-black">用户管理</text>
 		</view>
+		<view class="item" bindtap="url" data-url="../../internal_user/list/admin_internal_user_list"> <text class="icon-peoplefill text-purple"></text> <text class="text-black">内部人员管理</text>
+		</view>
 		<view class="item" bindtap="url" data-url="../../news/list/admin_news_list"> <text class="icon-newsfill text-darkgreen"></text> <text class="text-black">内容管理</text>
 		</view>
 	</view>
+
+	<!-- <view class="comm-list grid col-3">
+		<view class="item" bindtap="url" data-url="../../internal_user/list/admin_internal_user_list"> <text class="icon-peoplefill text-purple"></text> <text class="text-black">内部人员管理</text>
+		</view>
+	</view> -->
 
 
 	<!-- BOTTOM begin -->
