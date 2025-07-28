@@ -121,29 +121,36 @@ Page({
 					}, options);
 
 					console.log('importResult', importResult)
+					console.log('importResult.failCount:', importResult.failCount)
+					console.log('importResult.errorReportUrl:', importResult.errorReportUrl)
 					
 					// 隐藏导入提示
 					wx.hideLoading();
 
 					if (importResult) {
-						let message = '导入完成！\n\n';
-						message += '成功导入：' + importResult.successCount + '条\n';
-						message += '失败：' + importResult.failCount + '条\n';
+						let message = '成功：' + importResult.successCount + '条，';
+						message += '失败：' + importResult.failCount + '条';
 						
 						if (importResult.failCount > 0 && importResult.failList && importResult.failList.length > 0) {
+							console.log('有失败记录，failCount:', importResult.failCount);
 							// 有错误时，直接提供下载错误报告
 							if (importResult.errorReportUrl) {
-								message += '\n\n已生成错误报告文件，点击确定下载详细错误信息。';
-								
+								console.log('有错误报告文件，errorReportUrl:', importResult.errorReportUrl);
+								message += '，点击确认下载详细错误信息';
+								console.log('准备显示modal，message:', message);
 								wx.showModal({
 									title: '导入完成',
 									content: message,
-									confirmText: '下载错误报告',
+									confirmText: '下载',
 									cancelText: '关闭',
 									success: (res) => {
+										console.log('modal显示成功，用户选择:', res.confirm);
 										if (res.confirm) {
 											this.downloadErrorReport(importResult.errorReportUrl);
 										}
+									},
+									fail: (err) => {
+										console.log('modal显示失败:', err);
 									}
 								});
 							} else {
