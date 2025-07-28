@@ -148,9 +148,9 @@ module.exports = Behavior({
 				if (time.error.includes('暂不可预约')) {
 					return pageHelper.showModal('该日期不可预约，请选择最近7个可预约日期');
 				} else if (time.error.includes('预约')) {
-					return pageHelper.showModal('该时段' + time.error + '，换一个时段试试吧！');
+					return pageHelper.showModal(time.error + '，换一个时段试试吧！');
 				} else {
-					return pageHelper.showModal('该时段预约' + time.error + '，换一个时段试试吧！');
+					return pageHelper.showModal(time.error + '，换一个时段试试吧！');
 				}
 			}
 
