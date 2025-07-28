@@ -40,14 +40,14 @@ class AdminInternalUserController extends BaseAdminController {
 
 		// 数据校验
 		let rules = {
-			userList: 'array|must|name=用户数据列表',
+			fileID: 'string|must|name=云存储文件ID',
 		};
 
 		// 取得数据
 		let input = this.validateData(rules);
 
 		let service = new AdminInternalUserService();
-		let result = await service.importInternalUserData(input);
+		let result = await service.importInternalUserData(input, this._admin);
 
 		return result;
 	}

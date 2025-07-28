@@ -2,6 +2,7 @@ const AdminBiz = require('../../../../biz/admin_biz.js');
 const pageHelper = require('../../../../helper/page_helper.js');
 const cloudHelper = require('../../../../helper/cloud_helper.js');
 
+
 Page({
 
 	/**
@@ -75,40 +76,54 @@ Page({
 		wx.chooseMessageFile({
 			count: 1,
 			type: 'file',
-			extension: ['csv'],
+			extension: ['xlsx', 'xls', 'csv'],
 			success: async (res) => {
 				let file = res.tempFiles[0];
 				if (!file) {
-					pageHelper.showModal('请选择CSV文件');
+					pageHelper.showModal('请选择Excel文件');
 					return;
 				}
 
 				// 检查文件大小（限制为5MB）
-				if (file.size > 5 * 1024 * 1024) {
+				if (file.size > 20 * 1024 * 1024) {
 					pageHelper.showModal('文件大小不能超过5MB，请选择较小的文件');
 					return;
 				}
 
 				try {
-					// 读取文件内容
-					let fileContent = await this.readFileAsArrayBuffer(file.path);
+					// 文件上传比较长时间
+					wx.showLoading({
+						title: '文件上传中...',
+						mask: true
+					});
 					
-					// 前端解析Excel文件
-					let userList = this.parseExcelFile(fileContent);
+					// 上传文件到云存储
+					let uploadResult = await this.uploadFileToCloud(file.path, file.name);
 					
-					if (userList.length === 0) {
-						pageHelper.showModal('CSV文件中没有有效的数据行，请检查数据格式是否正确');
-						return;
-					}
-
-					// 发送解析后的数据到服务端插入
+					// 隐藏上传提示
+					wx.hideLoading();
+					
+					// 显示数据导入提示
+					wx.showLoading({
+						title: '数据导入中...',
+						mask: true
+					});
+					
+					// 发送fileID到云函数解析
 					let options = {
 						title: '数据导入中'
 					}
 
+					console.log('uploadResult', uploadResult)
+
 					let importResult = await cloudHelper.callCloudData('admin/internal_user_import', {
-						userList: userList
+						fileID: uploadResult.fileID
 					}, options);
+
+					console.log('importResult', importResult)
+					
+					// 隐藏导入提示
+					wx.hideLoading();
 
 					if (importResult) {
 						let message = '导入完成！\n\n';
@@ -116,17 +131,9 @@ Page({
 						message += '失败：' + importResult.failCount + '条\n';
 						
 						if (importResult.failCount > 0 && importResult.failList && importResult.failList.length > 0) {
-							message += '\n失败详情：\n';
-							importResult.failList.slice(0, 5).forEach(item => {
-								message += '第' + item.row + '行：' + item.reason + '\n';
-							});
-							if (importResult.failList.length > 5) {
-								message += '... 还有' + (importResult.failList.length - 5) + '条失败记录';
-							}
-							
-							// 如果有错误报告文件，提供下载
+							// 有错误时，直接提供下载错误报告
 							if (importResult.errorReportUrl) {
-								message += '\n\n已生成错误报告文件，是否下载？';
+								message += '\n\n已生成错误报告文件，点击确定下载详细错误信息。';
 								
 								wx.showModal({
 									title: '导入完成',
@@ -140,10 +147,12 @@ Page({
 									}
 								});
 							} else {
-								pageHelper.showModal(message);
+								// 如果没有错误报告文件，显示简要信息
+								pageHelper.showModal(message + '\n\n请检查数据格式后重新导入。');
 							}
 						} else {
-							pageHelper.showModal(message);
+							// 全部成功，显示成功提示
+							pageHelper.showSuccToast(message);
 						}
 					} else {
 						pageHelper.showModal('导入失败，请重试');
@@ -151,6 +160,7 @@ Page({
 
 				} catch (err) {
 					console.log('导入失败', err);
+					wx.hideLoading();
 					pageHelper.showModal('导入失败：' + (err.message || '请重试'));
 				}
 			},
@@ -205,108 +215,30 @@ Page({
 		}
 	},
 
-	/** 读取文件为ArrayBuffer */
-	readFileAsArrayBuffer: function (filePath) {
+
+
+	/** 上传文件到云存储 */
+	uploadFileToCloud: function (filePath, fileName) {
 		return new Promise((resolve, reject) => {
-			wx.getFileSystemManager().readFile({
+			// 生成云存储路径
+			let cloudPath = 'excel_import/' + Date.now() + '_' + fileName;
+			
+			wx.cloud.uploadFile({
+				cloudPath: cloudPath,
 				filePath: filePath,
 				success: (res) => {
-					resolve(res.data);
+					console.log('文件上传成功:', res);
+					resolve(res);
 				},
 				fail: (err) => {
+					console.log('文件上传失败:', err);
 					reject(err);
 				}
 			});
 		});
 	},
 
-	/** 前端解析Excel文件 */
-	parseExcelFile: function (fileContent) {
-		try {
-			// 将ArrayBuffer转换为字符串
-			let uint8Array = new Uint8Array(fileContent);
-			let text = '';
-			for (let i = 0; i < uint8Array.length; i++) {
-				text += String.fromCharCode(uint8Array[i]);
-			}
-			
-			console.log('文件内容:', text.substring(0, 200) + '...');
-			
-			// 简单的CSV解析（适用于Excel导出的CSV格式）
-			let lines = text.split('\n');
-			let csvData = [];
-			
-			for (let j = 0; j < lines.length; j++) {
-				let line = lines[j].trim();
-				if (line) {
-					// 处理CSV中的引号和逗号
-					let cells = this.parseCSVLine(line);
-					csvData.push(cells);
-				}
-			}
-			
-			console.log('解析到的数据:', csvData);
-			
-			if (!csvData || csvData.length < 2) {
-				throw new Error('Excel文件内容为空或格式错误');
-			}
-			
-			// 跳过表头，从第二行开始处理数据
-			let userList = [];
-			for (let i = 1; i < csvData.length; i++) {
-				let row = csvData[i];
-				if (!row || row.length === 0) continue; // 跳过空行
-				
-				// 提取数据（根据模板格式：姓名、手机号、城市、行业、单位）
-				let name = row[0] || '';
-				let mobile = row[1] || '';
-				let city = row[2] || '';
-				let trade = row[3] || '';
-				let work = row[4] || '';
-				
-				// 跳过没有手机号的行
-				if (!mobile || mobile.toString().trim() === '') continue;
-				
-				userList.push({
-					name: name.toString().trim(),
-					mobile: mobile.toString().trim(),
-					city: city.toString().trim(),
-					trade: trade.toString().trim(),
-					work: work.toString().trim()
-				});
-			}
-			
-			console.log('解析出的用户数据:', userList);
-			return userList;
-			
-		} catch (err) {
-			console.log('解析CSV失败:', err);
-			throw new Error('解析CSV文件失败: ' + err.message);
-		}
-	},
 
-	/** 解析CSV行 */
-	parseCSVLine: function (line) {
-		let cells = [];
-		let current = '';
-		let inQuotes = false;
-		
-		for (let i = 0; i < line.length; i++) {
-			let char = line[i];
-			
-			if (char === '"') {
-				inQuotes = !inQuotes;
-			} else if (char === ',' && !inQuotes) {
-				cells.push(current.trim());
-				current = '';
-			} else {
-				current += char;
-			}
-		}
-		
-		cells.push(current.trim());
-		return cells;
-	},
 
 	downloadErrorReport: function (fileID) {
 		// 使用云开发API获取临时下载链接
