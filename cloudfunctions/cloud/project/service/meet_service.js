@@ -16,6 +16,7 @@ const config = require('../../config/config.js');
 const PassportService = require('../service/passport_service.js');
 const cloudBase = require('../../framework/cloud/cloud_base.js');
 const UserModel = require('../model/user_model.js');
+const InternalUserModel = require('../model/internal_user_model.js');
 const cacheUtil = require('../../framework/utils/cache_util.js');
 
 class MeetService extends BaseService {
@@ -116,11 +117,51 @@ class MeetService extends BaseService {
 
 	// 预约前检测
 	async beforeJoin(userId, meetId, timeMark) {
+		// 检查用户是否是内部人员
+		await this.checkInternalUser(userId);
+		
+		// 检查预约规则
 		await this.checkMeetRules(userId, meetId, timeMark);
+	}
+
+	// 检查用户是否是内部人员
+	async checkInternalUser(userId) {
+		// 获取用户信息
+		let userWhere = {
+			and: {
+				_pid: this.getProjectId(),
+				USER_MINI_OPENID: userId,
+			},
+		};
+		console.log('checkInternalUser', userWhere);
+		let user = await UserModel.getOne(userWhere, 'USER_MOBILE,USER_NAME');
+
+		console.log('checkInternalUser--user', user);
+		
+		if (!user || !user.USER_MOBILE) {
+			this.AppError('请先完善个人信息，填写手机号码');
+		}
+
+		// 检查是否是内部人员
+		let internalWhere = {
+			and: {
+				_pid: this.getProjectId(),
+				INTERNAL_USER_MOBILE: user.USER_MOBILE,
+				INTERNAL_USER_STATUS: InternalUserModel.STATUS.COMM,
+			},
+		};
+		let internalUser = await InternalUserModel.getOne(internalWhere);
+		
+		if (!internalUser) {
+			this.AppError('仅内部人员可使用此功能，请联系管理员');
+		}
 	}
 
 	// 预约逻辑
 	async join(userId, meetId, timeMark, forms) {
+		// 检查用户是否是内部人员
+		await this.checkInternalUser(userId);
+		
 		// 预约时段是否存在
 		let meetWhere = {
 			_id: meetId
@@ -522,6 +563,8 @@ class MeetService extends BaseService {
 
 	/**  预约前获取关键信息 */
 	async detailForJoin(userId, meetId, timeMark) {
+		// 检查用户是否是内部人员
+		await this.checkInternalUser(userId);
 
 		let fields = 'MEET_DAYS_SET,MEET_FORM_SET, MEET_TITLE';
 
