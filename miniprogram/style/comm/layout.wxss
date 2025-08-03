@@ -247,7 +247,7 @@
 }
 
 .margin-bottom-xxl {
-	margin-bottom: 60rpx;
+	margin-bottom: 0rpx;
 }
 
 .margin-bottom-xxxl {

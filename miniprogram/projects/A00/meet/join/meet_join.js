@@ -5,6 +5,8 @@ let skin = require('../../skin/skin.js');
 Page({
 	behaviors: [behavior], 
 
+
+
 	onReady: function () {
 		PassortBiz.initPage({
 			skin,

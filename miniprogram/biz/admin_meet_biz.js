@@ -420,7 +420,8 @@ class AdminMeetBiz extends BaseBiz {
 
 			formIsShowLimit: 1, //是否显示可预约数量
 
-			formFormSet: formSetHelper.defaultForm(skin.DEFAULT_FORMS)
+			// 用户填写资料设置功能已隐藏，使用空数组
+			formFormSet: []
 		}
 
 	}
@@ -515,7 +516,8 @@ AdminMeetBiz.CHECK_FORM = {
 	daysSet: 'formDaysSet|must|array|name=预约时间设置',
 	isShowLimit: 'formIsShowLimit|must|int|in:0,1|name=是否显示可预约人数',
 
-	formSet: 'formFormSet|must|array|name=用户资料设置',
+	// 用户填写资料设置功能已隐藏，设为可选
+	// formSet: 'formFormSet|must|array|name=用户资料设置',
 };
 
 

@@ -6,12 +6,12 @@
 }
 
 .text-pic-list-box {
-	padding: 20rpx 0rpx 10rpx;
+	padding: 10rpx 0rpx 0rpx;
 }
 
 
 .text-pic-list-box .item {
-	padding: 20rpx 30rpx 20rpx 30rpx;
+	padding: 20rpx 30rpx 10rpx 30rpx;
 }
 
 .text-pic-list-box .title-line {
@@ -30,7 +30,7 @@
 .text-pic-list-box .item .oprt {
 	line-height: 1.5;
 	font-size: 27rpx; 
-	margin: 30rpx 0 10rpx;
+	margin: 15rpx 0 5rpx;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -44,7 +44,7 @@
 .info-list-box {
 	width: 100%;
 	box-sizing: border-box;
-	padding: 0rpx 0rpx 10rpx;
+	padding: 0rpx 0rpx 5rpx;
 	display: flex;
 	flex-direction: column;
 	justify-content: center; 
@@ -57,7 +57,7 @@
 	flex-direction: column;
 	background-color: #fff;
 	border-radius: 20rpx;
-	margin-bottom: 20rpx;
+	margin-bottom: 10rpx;
 	position: relative;
 }
 
@@ -80,10 +80,11 @@
 
 .info-list-box .item .info .title {
 	font-weight: bold;
-	width: 150rpx;
-	margin-right: 10rpx;
+	margin-right: 20rpx;
 	align-self: start;
 	position: relative;
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 .info-list-box .item .info .content {
@@ -105,4 +106,8 @@
 	width: 400rpx;
 	height: 400rpx;
 	margin: 30rpx;
+}
+
+.margin-top-aa{
+	margin-top: -5rpx;
 }

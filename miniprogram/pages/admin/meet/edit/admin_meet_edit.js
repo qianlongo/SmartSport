@@ -137,7 +137,8 @@ Page({
 			pageHelper.anchor('formDaysSet', this);
 			return pageHelper.formHint(this, 'formDaysSet', '请配置「可预约时段」');
 		}
-		if (data.formFormSet.length <= 0) return pageHelper.showModal('请至少设置一项「用户填写资料」');
+		// 用户填写资料设置功能已隐藏，跳过验证
+		// if (data.formFormSet.length <= 0) return pageHelper.showModal('请至少设置一项「用户填写资料」');
 
 		if (data.contentDesc.includes('未填写'))
 			return pageHelper.formHint(this, 'formContent', '请填写「详细介绍」');
@@ -200,7 +201,8 @@ Page({
 			pageHelper.anchor('formDaysSet', this);
 			return pageHelper.formHint(this, 'formDaysSet', '请配置「可预约时段」');
 		}
-		if (data.formFormSet.length <= 0) return pageHelper.showModal('请至少设置一项「用户填写资料」');
+		// 用户填写资料设置功能已隐藏，跳过验证
+		// if (data.formFormSet.length <= 0) return pageHelper.showModal('请至少设置一项「用户填写资料」');
 
 
 
@@ -239,7 +241,8 @@ Page({
 					'MEET_TITLE': data.title,
 					'MEET_TYPE_NAME': data.typeName,
 					'MEET_DAYS_SET': data.daysSet,
-					'MEET_FORM_SET': data.formSet,
+					// 用户填写资料设置功能已隐藏，使用空数组
+					'MEET_FORM_SET': data.formSet || [],
 					'MEET_EDIT_TIME': timeHelper.time('Y-M-D h:m:s'),
 					'leaveDay': AdminMeetBiz.getLeaveDay(data.daysSet)
 				}

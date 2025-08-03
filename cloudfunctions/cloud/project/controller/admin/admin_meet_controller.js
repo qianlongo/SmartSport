@@ -253,7 +253,8 @@ class AdminMeetController extends BaseAdminController {
 			daysSet: 'must|array|name=预约时间设置', 
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数', 
 
-			formSet: 'must|array|name=用户资料设置',
+			// 用户填写资料设置功能已隐藏，设为可选
+			// formSet: 'must|array|name=用户资料设置',
 		};
 
 		// 取得数据
@@ -326,7 +327,8 @@ class AdminMeetController extends BaseAdminController {
 		 
 			isShowLimit: 'must|int|in:0,1|name=是否显示可预约人数', 
 
-			formSet: 'must|array|name=用户资料设置',
+			// 用户填写资料设置功能已隐藏，设为可选
+			// formSet: 'must|array|name=用户资料设置',
 		};
 
 		// 取得数据

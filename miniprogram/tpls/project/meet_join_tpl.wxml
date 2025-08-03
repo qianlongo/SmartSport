@@ -16,11 +16,39 @@
 			</view>
 
 			<!-- form content begin -->
-			<view class="form-box card-project shadow-project margin-top">
-				<view class="form-group">
-					<view class="line-desc">请您填写资料，带<text class="text-red text-bold">*</text>号为必填项</view>
+			<view class="form-box card-project shadow-project margin-top">				
+				<!-- 携带人员类型选择 -->
+				<view class="form-group arrow">
+					<view class="title">携带人员类型：</view>
+					<picker class="picker-base" bindchange="bindCarryTypeChange" value="{{carryTypeIndex}}" range="{{carryTypeNames}}">
+						<view class="picker-select">
+							<text wx:if="{{carryTypeIndex >= 0}}">{{carryTypeNames[carryTypeIndex]}}</text>
+							<text wx:else class="text-grey">请选择携带人员类型</text>
+						</view>
+					</picker>
 				</view>
-				<cmpt-form-show isConfirm="{{true}}" id="form-show" forms="{{meet.myForms}}" fields="{{meet.MEET_FORM_SET}}" bind:submit="bindSubmitCmpt" />
+
+				<!-- 携带人数选择 -->
+				<view class="form-group arrow" wx:if="{{carryTypeIndex >= 0 && carryTypeIndex < 3}}">
+					<view class="title">携带人数：</view>
+					<picker class="picker-base" bindchange="bindCarryCountChange" value="{{carryCountIndex}}" range="{{carryCountNames}}">
+						<view class="picker-select">
+							<text wx:if="{{carryCountIndex >= 0}}">{{carryCountNames[carryCountIndex]}}</text>
+							<text wx:else class="text-grey">请选择携带人数</text>
+						</view>
+					</picker>
+				</view>
+
+				<!-- 携带人员姓名输入 -->
+				<view class="form-group" wx:if="{{carryCount > 0 && carryTypeIndex >= 0 && carryTypeIndex < 3}}">
+					<!-- <view class="form-label">携带人员姓名</view> -->
+					<view class="carry-names-list">
+						<view class="carry-name-item" wx:for="{{carryNames}}" wx:key="index">
+							<view class="carry-name-label">携带人员{{index + 1}}姓名：</view>
+							<input class="form-input carry-input" style="flex: 1; width: auto; min-width: 0; margin-left: 30rpx;" placeholder="请输入姓名" value="{{item}}" bindinput="bindCarryNameInput" data-index="{{index}}" />
+						</view>
+					</view>
+				</view>
 			</view>
 			<!-- form content end -->
 

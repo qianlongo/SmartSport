@@ -45,6 +45,10 @@ JoinModel.DB_STRUCTURE = {
 	   val:
 	*/
 
+	JOIN_CARRY_TYPE: 'int|false|default=0|comment=携带人员类型 0=不携带,1=亲属,2=同事,3=其他',
+	JOIN_CARRY_COUNT: 'int|false|default=0|comment=携带人数',
+	JOIN_CARRY_NAMES: 'array|false|default=[]|comment=携带人员姓名列表',
+
 	JOIN_STATUS: 'int|true|default=1|comment=状态 1=预约成功,10=已取消, 99=系统取消',
 
 	JOIN_REASON: 'string|false|comment=审核拒绝或者取消理由',

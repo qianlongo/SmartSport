@@ -241,7 +241,8 @@ class AdminMeetService extends BaseAdminService {
         MEET_TYPE_NAME: typeName,
         MEET_DAYS: days, // 保存可用日期数组
         MEET_IS_SHOW_LIMIT: isShowLimit,
-        MEET_FORM_SET: formSet,
+        // 用户填写资料设置功能已隐藏，使用空数组
+        MEET_FORM_SET: formSet || [],
         MEET_STATUS: MeetModel.STATUS.CLOSE, // 默认关闭状态（用户不可见）
       });
 
@@ -298,7 +299,8 @@ class AdminMeetService extends BaseAdminService {
         MEET_STYLE_SET: meet.MEET_STYLE_SET, // 复制样式设置
         MEET_DAYS: days, // 保存可用日期数组
         MEET_IS_SHOW_LIMIT: meet.MEET_IS_SHOW_LIMIT,
-        MEET_FORM_SET: meet.MEET_FORM_SET, // 复制表单设置
+        // 用户填写资料设置功能已隐藏，使用空数组
+        MEET_FORM_SET: meet.MEET_FORM_SET || [], // 复制表单设置
         MEET_STATUS: MeetModel.STATUS.CLOSE, // 默认关闭状态（用户不可见）
       });
 
@@ -459,7 +461,8 @@ class AdminMeetService extends BaseAdminService {
         MEET_TYPE_NAME: typeName,
         MEET_DAYS: days, // 保存可用日期数组
         MEET_IS_SHOW_LIMIT: isShowLimit,
-        MEET_FORM_SET: formSet,
+        // 用户填写资料设置功能已隐藏，使用空数组
+        MEET_FORM_SET: formSet || [],
       };
       await MeetModel.edit(where, data);
 

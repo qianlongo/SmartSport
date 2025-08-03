@@ -297,6 +297,9 @@ class MeetController extends BaseController {
 			meetId: 'must|id',
 			timeMark: 'must|string',
 			forms: 'must|array',
+			carryType: 'int|default=0|name=携带人员类型',
+			carryCount: 'int|default=0|name=携带人数',
+			carryNames: 'array|default=[]|name=携带人员姓名',
 		};
 
 		// 取得数据
@@ -304,7 +307,7 @@ class MeetController extends BaseController {
 
 		let service = new MeetService();
 		let admin = null;
-		return await service.join(this._userId, input.meetId, input.timeMark, input.forms);
+		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.carryType, input.carryCount, input.carryNames);
 	}
 
 
