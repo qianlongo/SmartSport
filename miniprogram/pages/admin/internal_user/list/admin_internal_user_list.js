@@ -75,8 +75,8 @@ Page({
 		for (let i = 0; i < list.length; i++) {
 			let item = list[i];
 			if (item.INTERNAL_USER_IMPORT_TIME) {
-				// 将时间戳转换为格式化时间
-				let date = new Date(item.INTERNAL_USER_IMPORT_TIME * 1000);
+				// 将时间戳转换为格式化时间（后端返回的是毫秒时间戳）
+				let date = new Date(item.INTERNAL_USER_IMPORT_TIME);
 				let year = date.getFullYear();
 				let month = String(date.getMonth() + 1).padStart(2, '0');
 				let day = String(date.getDate()).padStart(2, '0');
