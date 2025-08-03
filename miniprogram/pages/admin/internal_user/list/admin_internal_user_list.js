@@ -10,11 +10,10 @@ Page({
 	data: {
 		showModal: false,
 		isEdit: false,
-		formData: {
-			name: '',
-			mobile: ''
-		},
-		editId: ''
+		formName: '',
+		formMobile: '',
+		editId: '',
+		canSubmit: false
 	},
 
 	/**
@@ -201,6 +200,16 @@ Page({
 						} else {
 							// 全部成功，显示成功提示
 							pageHelper.showSuccToast(message);
+							
+							// 刷新列表
+							let commListCmpt = this.selectComponent('#comm-list');
+							if (commListCmpt && commListCmpt._getList) {
+								commListCmpt._getList(1);
+							} else {
+								console.log('未找到列表组件或_getList方法，尝试重新加载页面');
+								// 如果找不到组件，重新加载页面
+								this.onShow();
+							}
 						}
 					} else {
 						pageHelper.showModal('导入失败，请重试');
@@ -370,11 +379,11 @@ Page({
 		this.setData({
 			showModal: true,
 			isEdit: false,
-			formData: {
-				name: '',
-				mobile: ''
-			},
+			formName: '',
+			formMobile: '',
 			editId: ''
+		}, () => {
+			this._checkFormComplete();
 		});
 	},
 
@@ -383,11 +392,11 @@ Page({
 		this.setData({
 			showModal: true,
 			isEdit: true,
-			formData: {
-				name: item.INTERNAL_USER_NAME || '',
-				mobile: item.INTERNAL_USER_MOBILE || ''
-			},
+			formName: item.INTERNAL_USER_NAME || '',
+			formMobile: item.INTERNAL_USER_MOBILE || '',
 			editId: item.INTERNAL_USER_ID
+		}, () => {
+			this._checkFormComplete();
 		});
 	},
 
@@ -408,32 +417,75 @@ Page({
 		});
 	},
 
+	// 检查表单是否完整
+	_checkFormComplete: function () {
+		let formName = this.data.formName;
+		let formMobile = this.data.formMobile;
+		
+		let canSubmit = formName && formName.trim() && formMobile && formMobile.trim();
+		
+		this.setData({
+			canSubmit: canSubmit
+		});
+	},
+
+	// 输入事件处理
+	bindNameInput: function (e) {
+		this._checkFormComplete();
+	},
+
+	bindMobileInput: function (e) {
+		this._checkFormComplete();
+	},
+
+	bindConfirmTap: function (e) {
+		if (this.data.canSubmit) {
+			this.bindModalConfirmTap(e);
+		} else {
+			let formName = this.data.formName;
+			let formMobile = this.data.formMobile;
+			
+			if (!formName || !formName.trim()) {
+				pageHelper.showNoneToast('请填写姓名');
+			} else if (!formMobile || !formMobile.trim()) {
+				pageHelper.showNoneToast('请填写手机号');
+			} else if (formMobile && formMobile.trim()) {
+				// 验证手机号格式
+				let mobileReg = /^1[3-9]\d{9}$/;
+				if (!mobileReg.test(formMobile.trim())) {
+					pageHelper.showNoneToast('请输入正确的手机号');
+				}
+			}
+		}
+	},
+
 	bindModalConfirmTap: async function (e) {
 		if (!AdminBiz.isAdmin(this)) return;
 
-		let formData = this.data.formData;
+		let formName = this.data.formName;
+		let formMobile = this.data.formMobile;
 		
 		// 验证必填字段
-		if (!formData.name || !formData.name.trim()) {
-			pageHelper.showModal('请输入姓名');
+		if (!formName || !formName.trim()) {
+			pageHelper.showNoneToast('请输入姓名');
 			return;
 		}
-		if (!formData.mobile || !formData.mobile.trim()) {
-			pageHelper.showModal('请输入手机号');
+		if (!formMobile || !formMobile.trim()) {
+			pageHelper.showNoneToast('请输入手机号');
 			return;
 		}
 
 		// 验证手机号格式
 		let mobileReg = /^1[3-9]\d{9}$/;
-		if (!mobileReg.test(formData.mobile)) {
-			pageHelper.showModal('请输入正确的手机号格式');
+		if (!mobileReg.test(formMobile)) {
+			pageHelper.showNoneToast('请输入正确的手机号');
 			return;
 		}
 
 		try {
 			let params = {
-				name: formData.name.trim(),
-				mobile: formData.mobile.trim()
+				name: formName.trim(),
+				mobile: formMobile.trim()
 			};
 
 			console.log('准备调用接口，参数:', params);
@@ -452,15 +504,19 @@ Page({
 				pageHelper.showSuccToast('添加成功');
 			}
 
-			// 关闭弹窗并刷新列表
+			// 关闭弹窗
 			this.setData({
 				showModal: false
 			});
 			
-			// 刷新列表
-			let commListCmpt = this.selectComponent('cmpt-comm-list');
-			if (commListCmpt) {
-				commListCmpt.refresh();
+			// 刷新列表 - 让组件重新获取数据
+			let commListCmpt = this.selectComponent('#comm-list');
+			if (commListCmpt && commListCmpt._getList) {
+				commListCmpt._getList(1);
+			} else {
+				console.log('未找到列表组件或_getList方法，尝试重新加载页面');
+				// 如果找不到组件，重新加载页面
+				this.onShow();
 			}
 
 		} catch (err) {

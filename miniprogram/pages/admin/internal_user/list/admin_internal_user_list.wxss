@@ -23,6 +23,7 @@
 	overflow-y: auto;
 	position: relative;
 	z-index: 10000;
+	box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -50,29 +51,46 @@
 }
 
 .form-group {
-	margin-bottom: 30rpx;
+	margin-bottom: 15rpx;
+	margin-top: 0;
+	padding-top: 0;
+	border-top: none;
 }
 
 .form-label {
 	font-size: 28rpx;
 	color: #333;
 	margin-bottom: 10rpx;
+	width: 140rpx;
+	display: inline-block;
+	white-space: nowrap;
 }
 
 .form-input {
 	border: 1rpx solid #ddd;
 	border-radius: 8rpx;
-	padding: 20rpx;
+	padding: 0 20rpx;
 	font-size: 28rpx;
 	width: 100%;
 	box-sizing: border-box;
+	background-color: #fafafa;
+	transition: all 0.3s ease;
+	height: 80rpx;
+	line-height: 40rpx;
+}
+
+.form-input:focus {
+	border-color: #24C68A;
+	background-color: #fff;
+	box-shadow: 0 0 0 2rpx rgba(36, 198, 138, 0.2);
 }
 
 .modal-footer {
 	padding: 30rpx;
 	border-top: 1rpx solid #eee;
 	display: flex;
-	justify-content: space-between;
+	justify-content: center;
+	gap: 60rpx;
 }
 
 .btn-cancel {
@@ -84,16 +102,20 @@
 	font-size: 28rpx;
 }
 
-.btn-confirm {
-	background: #24C68A;
-	color: white;
+
+
+.btn-confirm-disabled {
+	background: #ccc;
+	color: #999;
 	border: none;
 	padding: 20rpx 40rpx;
 	border-radius: 8rpx;
 	font-size: 28rpx;
+	cursor: not-allowed;
 }
 
 .required {
 	color: #ff4444;
 	font-size: 24rpx;
+	margin-right: 8rpx;
 } 

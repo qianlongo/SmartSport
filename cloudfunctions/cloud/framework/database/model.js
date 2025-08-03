@@ -15,19 +15,45 @@ class Model {
 	/**
 	 * 构造当前ID
 	 */
+	// 本地缓存，减少数据库操作
+	static _idCache = {
+		lastTimestamp: 0,
+		sequence: 0,
+		lastDateStr: ''
+	};
+
+	static async makeUniqueID() {
+		const now = new Date();
+		const currentTimestamp = now.getTime();
+		const currentDateStr = timeUtil.time('YMDhms');
+		
+		// 如果日期变化，重置序列号
+		if (currentDateStr !== this._idCache.lastDateStr) {
+			this._idCache.sequence = 0;
+			this._idCache.lastDateStr = currentDateStr;
+		}
+		
+		// 递增本地序列号
+		this._idCache.sequence++;
+		
+		// 格式化为 YMDhms + 毫秒3位 + 序列号5位
+		const millisStr = (currentTimestamp % 1000).toString().padStart(3, '0');
+		const sequenceStr = this._idCache.sequence.toString().padStart(5, '0');
+		
+		return currentDateStr + millisStr + sequenceStr;
+	}
+
 	static makeID() {
-		let id = timeUtil.time('YMDhms') + ''; //秒
-
-		//毫秒3位
-		let miss = timeUtil.time() % 1000 + '';
-		if (miss.length == 0)
-			miss = '000';
-		else if (miss.length == 1)
-			miss = '00' + miss;
-		else if (miss.length == 2)
-			miss = '0' + miss;
-
-		return id + miss;
+		// 为了兼容性，保留原有方法，但建议使用makeUniqueID
+		let now = new Date();
+		let currentTimestamp = now.getTime();
+		
+		// 使用时间戳 + 随机数作为备用方案
+		let dateStr = timeUtil.time('YMDhms');
+		let millisStr = (currentTimestamp % 1000).toString().padStart(3, '0');
+		let randomStr = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+		
+		return dateStr + millisStr + randomStr;
 	}
 
 	/**
@@ -86,7 +112,9 @@ class Model {
 		// 自动ID
 		if (this.ADD_ID) {
 			let idField = this.FIELD_PREFIX + 'ID';
-			if (!util.isDefined(data[idField])) data[idField] = Model.makeID();
+			if (!util.isDefined(data[idField])) {
+				data[idField] = Model.makeUniqueID();
+			}
 		}
 
 		// 更新时间
@@ -139,8 +167,11 @@ class Model {
 		// 自动ID
 		if (this.ADD_ID) {
 			let idField = this.FIELD_PREFIX + 'ID';
-			for (let k in data)
-				if (!util.isDefined(data[k][idField])) data[k][idField] = Model.makeID();
+			for (let k in data) {
+				if (!util.isDefined(data[k][idField])) {
+					data[k][idField] = Model.makeUniqueID();
+				}
+			}
 		}
 
 		// 更新时间

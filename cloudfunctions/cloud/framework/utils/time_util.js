@@ -144,12 +144,11 @@ function time2Timestamp(date) {
  * @param {int} 时间步长 (秒)
  */
 function time(fmt, step = 0) {
-	let t = 0;
 	if (util.isDefined(fmt)) {
 		let t = new Date().getTime() + step * 1000;
 		return timestamp2Time(t, fmt);
 	}
-	return new Date().getTime() + t * 1000;
+	return new Date().getTime() + step * 1000;
 }
 
 // 获取某天0点

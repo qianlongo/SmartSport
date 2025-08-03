@@ -11,6 +11,7 @@ const cloudBase = require("../../../framework/cloud/cloud_base.js");
 const config = require("../../../config/config.js");
 
 const InternalUserModel = require("../../model/internal_user_model.js");
+const LogModel = require("../../model/log_model.js");
 
 class AdminInternalUserService extends BaseAdminService {
   /** 取得内部人员分页列表 */
@@ -109,7 +110,11 @@ class AdminInternalUserService extends BaseAdminService {
 		await InternalUserModel.insert(data);
 
 		// 记录日志
-		this.insertLog('添加了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+		try {
+			this.insertLog('添加了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+		} catch (err) {
+			console.log('日志记录失败：', err);
+		}
 	}
 
 	/** 编辑内部人员 */
@@ -142,7 +147,11 @@ class AdminInternalUserService extends BaseAdminService {
 		await InternalUserModel.edit(whereUpdate, updateData);
 
 		// 记录日志
-		this.insertLog('编辑了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+		try {
+			this.insertLog('编辑了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+		} catch (err) {
+			console.log('日志记录失败：', err);
+		}
 	}
 
   /** 导入内部人员数据 */
@@ -186,6 +195,16 @@ class AdminInternalUserService extends BaseAdminService {
         let userData = userList[i];
         
         // 数据验证
+        if (!userData.name || !userData.name.trim()) {
+          failCount++;
+          failList.push({
+            row: i + 1,
+            reason: '姓名不能为空',
+            data: userData
+          });
+          continue;
+        }
+        
         if (!userData.mobile) {
           failCount++;
           failList.push({
@@ -365,12 +384,12 @@ class AdminInternalUserService extends BaseAdminService {
 
     // 准备Excel数据
     let excelData = [
-      ["姓名(非必填)", "手机号(必填)"],
+      ["姓名(必填)", "手机号(必填)"],
       ["张三", "13800138000"],
       ["李四", "13800138001"],
       ["王五", "13800138002"],
-      ["", "13800138003"],
-      ["", "13800138004"],
+      ["赵六", "13800138003"],
+      ["钱七", "13800138004"],
     ];
 
     // 生成Excel文件

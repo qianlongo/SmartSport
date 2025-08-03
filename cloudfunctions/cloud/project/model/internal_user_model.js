@@ -5,7 +5,23 @@
  */
 
 const BaseModel = require('./base_model.js');
-class InternalUserModel extends BaseModel {}
+const dbUtil = require('../../framework/database/db_util.js');
+
+class InternalUserModel extends BaseModel {
+	
+	/**
+	 * 插入数据
+	 * @param {*} data 
+	 */
+	static async insert(data, mustPID = true) {
+		// 检查集合是否存在，不存在则创建
+		if (!(await dbUtil.isExistCollection(this.CL))) {
+			await dbUtil.createCollection(this.CL);
+		}
+		
+		return await super.insert(data, mustPID);
+	}
+}
 
 // 集合名
 InternalUserModel.CL = "ax_internal_user";
