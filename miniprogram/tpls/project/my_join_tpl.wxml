@@ -31,6 +31,7 @@
 					<view class="data data-button">
 						<button bindtap="url" data-url="../join_detail/my_join_detail?id={{item._id}}" class="btn mid bg-gray text-black">查看详情</button>
 						<button wx:if="{{(item.JOIN_STATUS==1||item.JOIN_STATUS==0) && item.JOIN_IS_CHECKIN==0}}" bindtap="bindCancelTap" data-id="{{item._id}}" class="btn mid bg-grey light"><text class="icon-close"></text>取消</button>
+						<button wx:if="{{item.JOIN_STATUS==1 && item.JOIN_IS_CHECKIN==0 && item.JOIN_MEET_DAY_STANDARD==today}}" bindtap="bindCheckinTap" data-id="{{item._id}}" class="btn mid bg-green text-white"><text class="icon-check"></text>自助签到</button>
 					</view>
 
 				</view>

@@ -233,6 +233,21 @@ class MeetController extends BaseController {
 		return await service.userSelfCheckin(this._userId, input.timeMark);
 	}
 
+	/** 用户预约签到 */
+	async myJoinCheckin() {
+
+		// 数据校验
+		let rules = {
+			joinId: 'must|id',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		let service = new MeetService();
+		return await service.myJoinCheckin(this._userId, input.joinId);
+	}
+
 
 	/**  预约前获取关键信息 */
 	async detailForJoin() {

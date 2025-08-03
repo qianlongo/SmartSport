@@ -27,7 +27,7 @@ module.exports = {
 	'my/my_join_cancel': 'meet_controller@cancelMyJoin',
 	'my/my_join_detail': 'meet_controller@getMyJoinDetail',
 	'my/my_join_someday': 'meet_controller@getMyJoinSomeday',
-	'my/my_join_checkin': 'meet_controller@userSelfCheckin', 
+	'my/my_join_checkin': 'meet_controller@myJoinCheckin', 
 
 	'test/test': 'test/test_controller@test',
 	'test/meet_test_join': 'test/test_meet_controller@testJoin',

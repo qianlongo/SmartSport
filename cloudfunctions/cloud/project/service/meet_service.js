@@ -565,6 +565,41 @@ class MeetService extends BaseService {
 
 	}
 
+	/** 用户预约签到 */
+	async myJoinCheckin(userId, joinId) {
+		// 检查预约记录是否存在且属于当前用户
+		let where = {
+			_id: joinId,
+			JOIN_USER_ID: userId,
+			JOIN_STATUS: JoinModel.STATUS.SUCC
+		}
+		let join = await JoinModel.getOne(where, 'JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_IS_CHECKIN');
+		if (!join) {
+			this.AppError('预约记录不存在或已取消');
+		}
+
+		// 检查是否已经签到
+		if (join.JOIN_IS_CHECKIN == 1) {
+			this.AppError('该预约已经签到，请勿重复签到');
+		}
+
+		// 检查是否是当天的预约
+		let today = timeUtil.time('Y-M-D');
+		if (join.JOIN_MEET_DAY != today) {
+			this.AppError('只能签到当天的预约');
+		}
+
+		// 更新签到状态
+		let data = {
+			JOIN_IS_CHECKIN: 1
+		}
+		await JoinModel.edit(where, data);
+
+		return {
+			msg: '签到成功'
+		};
+	}
+
 
 	/**  预约前获取关键信息 */
 	async detailForJoin(userId, meetId, timeMark) {
