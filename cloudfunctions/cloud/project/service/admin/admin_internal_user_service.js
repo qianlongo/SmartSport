@@ -72,8 +72,78 @@ class AdminInternalUserService extends BaseAdminService {
       false
     );
 
-    return result;
-  }
+    		return result;
+	}
+
+	/** 添加内部人员 */
+	async addInternalUser(input, admin = null) {
+		// 检查手机号是否已存在
+		let where = {
+			and: {
+				_pid: this.getProjectId(),
+				INTERNAL_USER_MOBILE: input.mobile,
+			},
+		};
+		let existUser = await InternalUserModel.getOne(where);
+		if (existUser) {
+			this.AppError('该手机号已存在');
+		}
+
+		// 插入数据
+		let data = {
+			INTERNAL_USER_NAME: input.name,
+			INTERNAL_USER_MOBILE: input.mobile,
+			INTERNAL_USER_CITY: '',
+			INTERNAL_USER_TRADE: '',
+			INTERNAL_USER_WORK: '',
+			INTERNAL_USER_STATUS: InternalUserModel.STATUS.COMM,
+			INTERNAL_USER_IMPORT_TIME: timeUtil.time(),
+			INTERNAL_USER_IMPORT_ADMIN_ID: admin ? admin.ADMIN_ID : '',
+			INTERNAL_USER_IMPORT_ADMIN_NAME: admin ? admin.ADMIN_NAME : '',
+			INTERNAL_USER_ADD_TIME: timeUtil.time(),
+			INTERNAL_USER_ADD_IP: '',
+			INTERNAL_USER_EDIT_TIME: timeUtil.time(),
+			INTERNAL_USER_EDIT_IP: '',
+		};
+
+		await InternalUserModel.insert(data);
+
+		// 记录日志
+		this.insertLog('添加了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+	}
+
+	/** 编辑内部人员 */
+	async editInternalUser(input, admin = null) {
+		// 检查手机号是否已被其他用户使用
+		let where = {
+			and: {
+				_pid: this.getProjectId(),
+				INTERNAL_USER_MOBILE: input.mobile,
+				INTERNAL_USER_ID: ['!=', input.id],
+			},
+		};
+		let existUser = await InternalUserModel.getOne(where);
+		if (existUser) {
+			this.AppError('该手机号已被其他用户使用');
+		}
+
+		// 更新数据
+		let updateData = {
+			INTERNAL_USER_NAME: input.name,
+			INTERNAL_USER_MOBILE: input.mobile,
+			INTERNAL_USER_EDIT_TIME: timeUtil.time(),
+			INTERNAL_USER_EDIT_IP: '',
+		};
+
+		let whereUpdate = {
+			INTERNAL_USER_ID: input.id,
+		};
+
+		await InternalUserModel.edit(whereUpdate, updateData);
+
+		// 记录日志
+		this.insertLog('编辑了内部人员：' + input.name, admin, LogModel.TYPE.USER);
+	}
 
   /** 导入内部人员数据 */
   	async importInternalUserData({

@@ -7,7 +7,15 @@ Page({
 	/**
 	 * 页面的初始数据
 	 */
-	data: {},
+	data: {
+		showModal: false,
+		isEdit: false,
+		formData: {
+			name: '',
+			mobile: ''
+		},
+		editId: ''
+	},
 
 	/**
 	 * 生命周期函数--监听页面加载
@@ -51,6 +59,36 @@ Page({
 
 	bindCommListCmpt: function (e) {
 		pageHelper.commListListener(this, e);
+		
+		// 格式化时间显示
+		if (this.data.dataList && this.data.dataList.list) {
+			this.data.dataList.list = this._formatTimeDisplay(this.data.dataList.list);
+			this.setData({
+				dataList: this.data.dataList
+			});
+		}
+	},
+
+	// 格式化时间显示
+	_formatTimeDisplay: function (list) {
+		if (!list || !Array.isArray(list)) return list;
+		
+		for (let i = 0; i < list.length; i++) {
+			let item = list[i];
+			if (item.INTERNAL_USER_IMPORT_TIME) {
+				// 将时间戳转换为格式化时间
+				let date = new Date(item.INTERNAL_USER_IMPORT_TIME * 1000);
+				let year = date.getFullYear();
+				let month = String(date.getMonth() + 1).padStart(2, '0');
+				let day = String(date.getDate()).padStart(2, '0');
+				let hours = String(date.getHours()).padStart(2, '0');
+				let minutes = String(date.getMinutes()).padStart(2, '0');
+				let seconds = String(date.getSeconds()).padStart(2, '0');
+				
+				item.INTERNAL_USER_IMPORT_TIME_FORMAT = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+			}
+		}
+		return list;
 	},
 
 	// 导入导出选择
@@ -324,6 +362,111 @@ Page({
 			});
 		} catch (e) {
 			console.log(e);
+		}
+	},
+
+	// 弹窗相关方法
+	bindAddTap: function (e) {
+		this.setData({
+			showModal: true,
+			isEdit: false,
+			formData: {
+				name: '',
+				mobile: ''
+			},
+			editId: ''
+		});
+	},
+
+	bindEditTap: function (e) {
+		let item = e.currentTarget.dataset.item;
+		this.setData({
+			showModal: true,
+			isEdit: true,
+			formData: {
+				name: item.INTERNAL_USER_NAME || '',
+				mobile: item.INTERNAL_USER_MOBILE || ''
+			},
+			editId: item.INTERNAL_USER_ID
+		});
+	},
+
+	bindModalMaskTap: function (e) {
+		// 点击遮罩层关闭弹窗
+		this.setData({
+			showModal: false
+		});
+	},
+
+	bindModalContentTap: function (e) {
+		// 阻止事件冒泡
+	},
+
+	bindModalCloseTap: function (e) {
+		this.setData({
+			showModal: false
+		});
+	},
+
+	bindModalConfirmTap: async function (e) {
+		if (!AdminBiz.isAdmin(this)) return;
+
+		let formData = this.data.formData;
+		
+		// 验证必填字段
+		if (!formData.name || !formData.name.trim()) {
+			pageHelper.showModal('请输入姓名');
+			return;
+		}
+		if (!formData.mobile || !formData.mobile.trim()) {
+			pageHelper.showModal('请输入手机号');
+			return;
+		}
+
+		// 验证手机号格式
+		let mobileReg = /^1[3-9]\d{9}$/;
+		if (!mobileReg.test(formData.mobile)) {
+			pageHelper.showModal('请输入正确的手机号格式');
+			return;
+		}
+
+		try {
+			let params = {
+				name: formData.name.trim(),
+				mobile: formData.mobile.trim()
+			};
+
+			console.log('准备调用接口，参数:', params);
+			console.log('是否为编辑模式:', this.data.isEdit);
+
+			if (this.data.isEdit) {
+				// 编辑模式
+				params.id = this.data.editId;
+				console.log('调用编辑接口，完整参数:', params);
+				await cloudHelper.callCloudSumbit('admin/internal_user_edit', params, { title: '保存中' });
+				pageHelper.showSuccToast('编辑成功');
+			} else {
+				// 添加模式
+				console.log('调用添加接口，参数:', params);
+				await cloudHelper.callCloudSumbit('admin/internal_user_add', params, { title: '添加中' });
+				pageHelper.showSuccToast('添加成功');
+			}
+
+			// 关闭弹窗并刷新列表
+			this.setData({
+				showModal: false
+			});
+			
+			// 刷新列表
+			let commListCmpt = this.selectComponent('cmpt-comm-list');
+			if (commListCmpt) {
+				commListCmpt.refresh();
+			}
+
+		} catch (err) {
+			console.log('操作失败', err);
+			console.log('错误详情:', JSON.stringify(err));
+			pageHelper.showModal('操作失败：' + (err.message || err.msg || '请重试'));
 		}
 	},
 

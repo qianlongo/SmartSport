@@ -101,9 +101,40 @@ class AdminInternalUserController extends BaseAdminController {
 		return result;
 	}
 
+	/** 添加内部人员 */
+	async addInternalUser() {
+		await this.isAdmin();
 
+		// 数据校验
+		let rules = {
+			name: 'required|string|min:1|max:20|name=姓名',
+			mobile: 'required|string|min:11|max:11|name=手机号',
+		};
 
+		// 取得数据
+		let input = this.validateData(rules);
 
+		let service = new AdminInternalUserService();
+		return await service.addInternalUser(input, this._admin);
+	}
+
+	/** 编辑内部人员 */
+	async editInternalUser() {
+		await this.isAdmin();
+
+		// 数据校验
+		let rules = {
+			id: 'required|id|name=ID',
+			name: 'required|string|min:1|max:20|name=姓名',
+			mobile: 'required|string|min:11|max:11|name=手机号',
+		};
+
+		// 取得数据
+		let input = this.validateData(rules);
+
+		let service = new AdminInternalUserService();
+		return await service.editInternalUser(input, this._admin);
+	}
 
 }
 

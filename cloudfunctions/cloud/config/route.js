@@ -91,8 +91,8 @@ module.exports = {
 
 	'admin/internal_user_list': 'admin/admin_internal_user_controller@getInternalUserList',
 	'admin/internal_user_import': 'admin/admin_internal_user_controller@importInternalUserData#noDemo',
-
-
+	'admin/internal_user_add': 'admin/admin_internal_user_controller@addInternalUser#noDemo',
+	'admin/internal_user_edit': 'admin/admin_internal_user_controller@editInternalUser#noDemo',
 	'admin/internal_user_del': 'admin/admin_internal_user_controller@delInternalUser#noDemo',
 	'admin/internal_user_status': 'admin/admin_internal_user_controller@statusInternalUser#noDemo',
 	'admin/internal_user_template': 'admin/admin_internal_user_controller@generateImportTemplate',

@@ -2,7 +2,8 @@
 	<cmpt-comm-list type="admin-internal-user" search="{{search}}" _menus="{{sortMenus}}" _items="{{sortItems}}" route="admin/internal_user_list" sortMenusDefaultIndex="0" topBottom="50" placeholder="搜索姓名、手机号、单位" bind:list="bindCommListCmpt" sortMenusDefaultIndex="0">
 
 		<view slot="searchEnd">
-			<button bindtap="bindImportExportTap" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>导入内部人员</button>
+			<button bindtap="bindAddTap" class="btn mid radius bg-green text-white margin-right-s"><text class="icon-roundadd margin-right-xxs"></text>添加人员</button>
+			<button bindtap="bindImportExportTap" class="btn mid radius bg-admin text-white margin-right-s"><text class="icon-down margin-right-xxs"></text>批量导入</button>
 		</view>
 
 		<!-- List Begin -->
@@ -27,36 +28,19 @@
 					</view> 
 
 					<view class="info-item">
-						<view class="title">城市</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.INTERNAL_USER_CITY||'未填写'}}</view>
-					</view>
-
-					<view class="info-item">
-						<view class="title">行业</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.INTERNAL_USER_TRADE||'未填写'}}</view>
-					</view>
-
-					<view class="info-item">
-						<view class="title">单位</view>
-						<view class="mao">：</view>
-						<view class="content">{{item.INTERNAL_USER_WORK||'未填写'}}</view>
-					</view>
-
-					<view class="info-item">
 						<view class="title">导入时间</view>
 						<view class="mao">：</view>
-						<view class="content">{{item.INTERNAL_USER_IMPORT_TIME}}</view>
+						<view class="content">{{item.INTERNAL_USER_IMPORT_TIME_FORMAT}}</view>
 					</view>
 
 					<view class="info-item">
-						<view class="title">导入管理员</view>
+						<view class="title">录入人员</view>
 						<view class="mao">：</view>
 						<view class="content">{{item.INTERNAL_USER_IMPORT_ADMIN_NAME||'未知'}}</view>
 					</view>
 
 					<view class="oprt">
+						<view bindtap="bindEditTap" data-item="{{item}}" class="btn margin-right-s"><text class="icon-edit margin-right-xxs text-blue"></text>编辑</view>
 						<view wx:if="{{item.INTERNAL_USER_STATUS==1}}" bindtap="bindStatusTap" data-id="{{item.INTERNAL_USER_ID}}" data-status="0" class="btn margin-right-s"><text class="icon-stop margin-right-xxs text-orange"></text>禁用</view>
 						<view wx:elif="{{item.INTERNAL_USER_STATUS==0}}" bindtap="bindStatusTap" data-id="{{item.INTERNAL_USER_ID}}" data-status="1" class="btn margin-right-s"><text class="icon-play margin-right-xxs text-green"></text>启用</view>
 
@@ -73,5 +57,29 @@
 		<!--load end-->
 
 	</cmpt-comm-list>
+
+	<!-- 添加/编辑弹窗 -->
+	<view wx:if="{{showModal}}" class="modal-mask" bindtap="bindModalMaskTap">
+		<view class="modal-content" catchtap="bindModalContentTap">
+			<view class="modal-header">
+				<text class="modal-title">{{isEdit ? '编辑内部人员' : '添加内部人员'}}</text>
+				<text class="modal-close" bindtap="bindModalCloseTap">×</text>
+			</view>
+			<view class="modal-body">
+				<view class="form-group">
+					<view class="form-label">姓名：<text class="required">*</text></view>
+					<input class="form-input" placeholder="请输入姓名" model:value="{{formData.name}}" maxlength="20" />
+				</view>
+				<view class="form-group">
+					<view class="form-label">手机号：<text class="required">*</text></view>
+					<input class="form-input" placeholder="请输入手机号" model:value="{{formData.mobile}}" maxlength="11" type="number" />
+				</view>
+			</view>
+			<view class="modal-footer">
+				<button class="btn btn-cancel" bindtap="bindModalCloseTap">取消</button>
+				<button class="btn btn-confirm" bindtap="bindModalConfirmTap">确定</button>
+			</view>
+		</view>
+	</view>
 
 </block> 
