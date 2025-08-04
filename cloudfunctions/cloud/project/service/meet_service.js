@@ -184,6 +184,16 @@ class MeetService extends BaseService {
 		// 规则校验
 		await this.checkMeetRules(userId, meetId, timeMark);
 
+		// 检查携带人员后的人数限制
+		if (carryType > 0 && carryCount > 0) {
+			let actualOccupiedCount = await this.getActualOccupiedCount(meetId, timeMark);
+			let timeSet = this.getTimeSetByTimeMark(meet, timeMark);
+			
+			if (timeSet.isLimit && (actualOccupiedCount + carryCount) > timeSet.limit) {
+				this.AppError(`携带${carryCount}人后超出人数限制，当前剩余名额：${timeSet.limit - actualOccupiedCount}人`);
+			}
+		}
+
 
 		let data = {};
 
@@ -231,6 +241,26 @@ class MeetService extends BaseService {
 			result: 'ok',
 			joinId
 		}
+	}
+
+	// 计算实际占用的人数（包括携带的人员）
+	async getActualOccupiedCount(meetId, timeMark) {
+		let where = {
+			JOIN_MEET_ID: meetId,
+			JOIN_MEET_TIME_MARK: timeMark,
+			JOIN_STATUS: JoinModel.STATUS.SUCC
+		};
+		
+		// 获取所有成功的预约记录
+		let joins = await JoinModel.getAll(where, 'JOIN_CARRY_COUNT');
+		
+		let totalCount = 0;
+		for (let join of joins) {
+			// 每个人算1个名额，加上携带的人数
+			totalCount += 1 + (join.JOIN_CARRY_COUNT || 0);
+		}
+		
+		return totalCount;
 	}
 
 	// 根据日期获取其所在天设置
@@ -296,7 +326,9 @@ class MeetService extends BaseService {
 
 		// 时段总人数限制
 		if (timeSet.isLimit) {
-			if (timeSet.stat.succCnt >= timeSet.limit) {
+			// 计算实际占用的人数（包括携带的人员）
+			let actualOccupiedCount = await this.getActualOccupiedCount(meet._id, timeMark);
+			if (actualOccupiedCount >= timeSet.limit) {
 				this.AppError('该时段预约人员已满，请选择其他');
 			}
 		}
@@ -472,9 +504,15 @@ class MeetService extends BaseService {
 				// 排除状态关闭的时段
 				if (timeNode.status != 1) continue;
 
-				// 判断数量是否已满
-				if (timeNode.isLimit && timeNode.stat.succCnt >= timeNode.limit)
-					timeNode.error = '预约已满';
+				// 判断数量是否已满（考虑携带的人员数量）
+				if (timeNode.isLimit) {
+					let actualOccupiedCount = await this.getActualOccupiedCount(meetId, timeNode.mark);
+					if (actualOccupiedCount >= timeNode.limit) {
+						timeNode.error = '预约已满';
+					}
+					// 更新显示的已预约人数为实际占用人数
+					timeNode.stat.actualOccupiedCount = actualOccupiedCount;
+				}
 
 				// 截止规则（移除7天限制，让所有可预约的日期都显示）
 				if (!timeNode.error) {

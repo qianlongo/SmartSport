@@ -66,7 +66,7 @@
 									<view class="time-text limit {{itm.error?'error':''}}">
 										<text>{{itm.start}}～{{itm.end}}</text>
 										<block wx:if="{{!itm.error}}">
-											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==1&&itm.isLimit}}" class="limit-text">({{itm.stat.succCnt}}<text style="margin:0 5rpx">/</text>{{itm.limit}})</text>
+											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==1&&itm.isLimit}}" class="limit-text">({{itm.stat.actualOccupiedCount || itm.stat.succCnt}}<text style="margin:0 5rpx">/</text>{{itm.limit}})</text>
 											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==1&&!itm.isLimit}}" class='limit-text'>(人数不限)</text>
 											<text wx:if="{{meet.MEET_IS_SHOW_LIMIT==0}}" class='limit-text'>(可预约)</text>
 										</block>
