@@ -89,7 +89,7 @@ page {
 .join-list .item .info .info-item {
 	width: 100%;
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	justify-content: flex-start;
 	background-color: #fff;
 	line-height: 1.5;
@@ -102,12 +102,18 @@ page {
 	width: 160rpx;
 	color: #777;
 	text-align: right;
+	line-height: 40rpx;
+	display: flex;
+	align-items: center;
 }
 
 .join-list .item .info .info-item .mao {
 	color: #777;
 	text-align: left;
 	margin-right: 10rpx;
+	line-height: 40rpx;
+	display: flex;
+	align-items: center;
 }
 
 .join-list .item .info .info-item .content {
@@ -115,7 +121,7 @@ page {
 	color: #333;
 	display: flex;
 	justify-content: flex-start;
-	align-items: flex-start;
+	align-items: center !important;
 }
 
 .join-list .item .info .info-item.add-time {
