@@ -12,7 +12,7 @@ module.exports = Behavior({
 		isLoad: false,
 
 		// 携带人员相关数据
-		carryTypeIndex: 3, // 携带人员类型索引，-1表示未选择
+		carryTypeIndex: 3, // 携带人员类型索引，3表示选择"不携带"
 		carryTypeOptions: [
 			{ value: 1, name: '亲属' },
 			{ value: 2, name: '同事' },
@@ -20,7 +20,7 @@ module.exports = Behavior({
 			{ value: 0, name: '不携带' }
 		],
 		carryTypeNames: ['亲属', '同事', '其他', '不携带'], // 用于picker的range
-		carryCountIndex: 0, // 携带人数索引，0表示选择1人，1表示选择2人
+		carryCountIndex: -1, // 携带人数索引，-1表示未选择
 		carryCountOptions: [
 			{ value: 1, name: '1人' },
 			{ value: 2, name: '2人' },
@@ -29,8 +29,17 @@ module.exports = Behavior({
 			{ value: 5, name: '5人' }
 		],
 		carryCountNames: [], // 用于picker的range，动态生成1-40人
-		carryCount: 1, // 携带人数，默认1人
+		carryCount: 0, // 携带人数，默认0人
 		carryNames: [], // 携带人员姓名列表，默认空数组
+
+		// 报备相关数据
+		reportStatusIndex: -1, // 报备状态索引，-1表示未选择
+		reportStatusOptions: [
+			{ value: 1, name: '是' },
+			{ value: 2, name: '否' }
+		],
+		reportStatusNames: ['是', '否'], // 用于picker的range
+		reportStatus: 0, // 报备状态，0=未选择,1=已报备,2=未报备
 
 
 	},
@@ -149,10 +158,21 @@ module.exports = Behavior({
 				this.setData({
 					carryCountIndex: -1,
 					carryCount: 0,
-					carryNames: []
+					carryNames: [],
+					reportStatusIndex: -1,
+					reportStatus: 0
+				});
+			} else if (index === 2) { // "其他"在索引2
+				// 如果选择"其他"，需要先选择是否已报备
+				this.setData({
+					carryCountIndex: -1,
+					carryCount: 0,
+					carryNames: [],
+					reportStatusIndex: 1, // 默认选择"否"
+					reportStatus: 2
 				});
 			} else {
-				// 如果选择携带人员类型（非"不携带"），默认设置携带人数为1
+				// 如果选择携带人员类型（亲属或同事），默认设置携带人数为1
 				this.setData({
 					carryCountIndex: 0, // 选择"1人"
 					carryCount: 1,
@@ -210,6 +230,38 @@ module.exports = Behavior({
 			});
 		},
 
+		// 报备状态选择
+		bindReportStatusChange: function (e) {
+			let index = parseInt(e.detail.value);
+			let reportStatus = this.data.reportStatusOptions[index].value;
+			
+			console.log('报备状态选择:', {
+				index,
+				reportStatus
+			});
+			
+			this.setData({
+				reportStatusIndex: index,
+				reportStatus: reportStatus,
+			});
+			
+			// 如果选择"是"（已报备），默认设置携带人数为1
+			if (reportStatus === 1) {
+				this.setData({
+					carryCountIndex: 0, // 选择"1人"
+					carryCount: 1,
+					carryNames: [''] // 默认1个空字符串
+				});
+			} else {
+				// 如果选择"否"（未报备），清空携带人数相关数据
+				this.setData({
+					carryCountIndex: -1,
+					carryCount: 0,
+					carryNames: []
+				});
+			}
+		},
+
 		bindCheckTap: async function (e) {
 			// 验证携带人员信息
 			if (!this._validateCarryInfo()) {
@@ -225,11 +277,13 @@ module.exports = Behavior({
 			let carryTypeIndex = parseInt(this.data.carryTypeIndex); // 确保是数字
 			let carryCount = parseInt(this.data.carryCount); // 确保是数字
 			let carryNames = this.data.carryNames;
+			let reportStatus = parseInt(this.data.reportStatus); // 报备状态
 			
 			console.log('验证携带人员信息:', {
 				carryTypeIndex,
 				carryCount,
-				carryNames
+				carryNames,
+				reportStatus
 			});
 			
 			// 检查是否选择了携带人员类型
@@ -241,8 +295,34 @@ module.exports = Behavior({
 				return false;
 			}
 			
-			// 如果选择了携带人员（非"不携带"，即索引0-2），检查携带人数
-			if (carryTypeIndex >= 0 && carryTypeIndex <= 2 && carryCount === 0) {
+			// 如果选择"不携带"（索引3），直接通过验证
+			if (carryTypeIndex === 3) {
+				return true;
+			}
+			
+			// 如果选择了"其他"（索引2），检查是否选择了报备状态
+			if (carryTypeIndex === 2) {
+				if (reportStatus === 0) {
+					wx.showToast({
+						title: '请选择是否已报备',
+						icon: 'none'
+					});
+					return false;
+				}
+				
+				// 如果选择"否"（未报备），不允许提交
+				if (reportStatus === 2) {
+					wx.showModal({
+						title: '温馨提示',
+						content: '请先进行报备后再来预约',
+						showCancel: false
+					});
+					return false;
+				}
+			}
+			
+			// 如果选择了携带人员（亲属或同事，即索引0-1），检查携带人数
+			if (carryTypeIndex >= 0 && carryTypeIndex <= 1 && carryCount === 0) {
 				console.log('携带人数验证失败:', carryTypeIndex, carryCount);
 				wx.showToast({
 					title: '请选择携带人数',
@@ -279,18 +359,21 @@ module.exports = Behavior({
 					let carryType = 0;
 					let carryCount = 0;
 					let carryNames = [];
+					let reportStatus = 0;
 					
 					if (this.data.carryTypeIndex >= 0) {
 						carryType = this.data.carryTypeOptions[this.data.carryTypeIndex].value;
 						carryCount = this.data.carryCount;
 						carryNames = this.data.carryNames;
+						reportStatus = this.data.reportStatus;
 					}
 					
 					console.log('携带人员信息:', {
 						carryTypeIndex: this.data.carryTypeIndex,
 						carryType,
 						carryCount,
-						carryNames
+						carryNames,
+						reportStatus
 					});
 					
 					// 获取当前用户信息
@@ -331,7 +414,8 @@ module.exports = Behavior({
 						}], // 使用当前用户信息
 						carryType,
 						carryCount,
-						carryNames
+						carryNames,
+						reportStatus
 					}
 					
 					console.log('提交的参数:', params);

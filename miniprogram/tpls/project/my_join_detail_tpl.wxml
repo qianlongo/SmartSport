@@ -54,6 +54,15 @@
 							<text wx:elif="{{join.JOIN_CARRY_TYPE == 3}}">其他</text>
 						</view>
 					</view>
+					<!-- 报备信息 -->
+					<view class="info" wx:if="{{join.JOIN_CARRY_TYPE == 3}}">
+						<view class="title">是否已报备：</view>
+						<view class="content">
+							<text wx:if="{{join.JOIN_REPORT_STATUS == 1}}">是</text>
+							<text wx:elif="{{join.JOIN_REPORT_STATUS == 2}}">否</text>
+							<text wx:else>未选择</text>
+						</view>
+					</view>
 					<view class="info" wx:if="{{join.JOIN_CARRY_COUNT > 0}}">
 						<view class="title">携带人数：</view>
 						<view class="content">{{join.JOIN_CARRY_COUNT}}人</view>
@@ -66,7 +75,6 @@
 							</view>
 						</view>
 					</view>
-
 					<view class="info text-grey margin-top-xs text-s">提交时间：{{join.JOIN_ADD_TIME}}</view>
 				</view>
 			</view>

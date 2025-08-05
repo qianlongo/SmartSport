@@ -85,6 +85,17 @@
 						</view>
 					</view>
 
+					<!-- 报备信息 -->
+					<view class="info-item" wx:if="{{item.JOIN_CARRY_TYPE == 3}}">
+						<view class="title">是否已报备</view>
+						<view class="mao">：</view>
+						<view class="content">
+							<text wx:if="{{item.JOIN_REPORT_STATUS == 1}}" class="text-green">是</text>
+							<text wx:elif="{{item.JOIN_REPORT_STATUS == 2}}" class="text-red">否</text>
+							<text wx:else class="text-grey">未选择</text>
+						</view>
+					</view>
+
 					<view class="info-item add-time">
 						<view class="title text-grey">提交/变更</view>
 						<view class="mao text-grey">：</view>

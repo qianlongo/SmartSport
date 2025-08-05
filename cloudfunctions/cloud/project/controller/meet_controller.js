@@ -315,6 +315,7 @@ class MeetController extends BaseController {
 			carryType: 'int|default=0|name=携带人员类型',
 			carryCount: 'int|default=0|name=携带人数',
 			carryNames: 'array|default=[]|name=携带人员姓名',
+			reportStatus: 'int|default=0|name=报备状态',
 		};
 
 		// 取得数据
@@ -322,7 +323,7 @@ class MeetController extends BaseController {
 
 		let service = new MeetService();
 		let admin = null;
-		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.carryType, input.carryCount, input.carryNames);
+		return await service.join(this._userId, input.meetId, input.timeMark, input.forms, input.carryType, input.carryCount, input.carryNames, input.reportStatus);
 	}
 
 

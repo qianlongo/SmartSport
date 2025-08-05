@@ -23,24 +23,42 @@
 					<picker class="picker-base" bindchange="bindCarryTypeChange" value="{{carryTypeIndex}}" range="{{carryTypeNames}}">
 						<view class="picker-select">
 							<text wx:if="{{carryTypeIndex >= 0}}">{{carryTypeNames[carryTypeIndex]}}</text>
-							<text wx:else class="text-grey">请选择携带人员类型</text>
+							<text wx:else class="text-grey">请选择</text>
 						</view>
 					</picker>
 				</view>
 
+				<!-- 报备状态选择 -->
+				<view class="form-group arrow" wx:if="{{carryTypeIndex === 2}}">
+					<view class="title">是否已报备：</view>
+					<picker class="picker-base" bindchange="bindReportStatusChange" value="{{reportStatusIndex}}" range="{{reportStatusNames}}">
+						<view class="picker-select">
+							<text wx:if="{{reportStatusIndex >= 0}}">{{reportStatusNames[reportStatusIndex]}}</text>
+							<text wx:else class="text-grey">请选择</text>
+						</view>
+					</picker>
+				</view>
+
+				<!-- 未报备提示 -->
+				<view class="form-group" wx:if="{{carryTypeIndex === 2 && reportStatus === 2}}">
+					<view class="text-sm">
+						请联系 王北京<text bindtap="url" data-type="phone" data-url="18829943679" class="text-blue">18829943679</text>， 郭国兴<text bindtap="url" data-type="phone" data-url="15989250585" class="text-blue">15989250585</text>
+					</view>
+				</view>
+
 				<!-- 携带人数选择 -->
-				<view class="form-group arrow" wx:if="{{carryTypeIndex >= 0 && carryTypeIndex < 3}}">
+				<view class="form-group arrow" wx:if="{{(carryTypeIndex >= 0 && carryTypeIndex < 2) || (carryTypeIndex === 2 && reportStatus === 1)}}">
 					<view class="title">携带人数：</view>
 					<picker class="picker-base" bindchange="bindCarryCountChange" value="{{carryCountIndex}}" range="{{carryCountNames}}">
 						<view class="picker-select">
 							<text wx:if="{{carryCountIndex >= 0}}">{{carryCountNames[carryCountIndex]}}</text>
-							<text wx:else class="text-grey">请选择携带人数</text>
+							<text wx:else class="text-grey">请选择</text>
 						</view>
 					</picker>
 				</view>
 
 				<!-- 携带人员姓名输入 -->
-				<view class="form-group" wx:if="{{carryCount > 0 && carryTypeIndex >= 0 && carryTypeIndex < 3}}">
+				<view class="form-group" wx:if="{{carryCount > 0 && ((carryTypeIndex >= 0 && carryTypeIndex < 2) || (carryTypeIndex === 2 && reportStatus === 1))}}">
 					<!-- <view class="form-label">携带人员姓名</view> -->
 					<view class="carry-names-list">
 						<view class="carry-name-item" wx:for="{{carryNames}}" wx:key="index">

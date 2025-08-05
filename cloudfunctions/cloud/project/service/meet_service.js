@@ -158,7 +158,7 @@ class MeetService extends BaseService {
 	}
 
 	// 预约逻辑
-	async join(userId, meetId, timeMark, forms, carryType = 0, carryCount = 0, carryNames = []) {
+	async join(userId, meetId, timeMark, forms, carryType = 0, carryCount = 0, carryNames = [], reportStatus = 0) {
 		// 检查用户是否是内部人员
 		await this.checkInternalUser(userId);
 		
@@ -214,6 +214,9 @@ class MeetService extends BaseService {
 		data.JOIN_CARRY_TYPE = carryType;
 		data.JOIN_CARRY_COUNT = carryCount;
 		data.JOIN_CARRY_NAMES = carryNames;
+
+		// 报备信息
+		data.JOIN_REPORT_STATUS = reportStatus;
 
 		data.JOIN_STATUS = JoinModel.STATUS.SUCC;
 		data.JOIN_CODE = dataUtil.genRandomIntString(15);
@@ -936,7 +939,7 @@ class MeetService extends BaseService {
 	/** 取得我的预约详情 */
 	async getMyJoinDetail(userId, joinId) {
 
-		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME,JOIN_CODE,JOIN_FORMS,JOIN_CARRY_TYPE,JOIN_CARRY_COUNT,JOIN_CARRY_NAMES';
+		let fields = 'JOIN_IS_CHECKIN,JOIN_REASON,JOIN_MEET_ID,JOIN_MEET_TITLE,JOIN_MEET_DAY,JOIN_MEET_TIME_START,JOIN_MEET_TIME_END,JOIN_STATUS,JOIN_ADD_TIME,JOIN_CODE,JOIN_FORMS,JOIN_CARRY_TYPE,JOIN_CARRY_COUNT,JOIN_CARRY_NAMES,JOIN_REPORT_STATUS';
 
 		let where = {
 			_id: joinId,
